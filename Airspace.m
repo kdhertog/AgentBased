@@ -22,7 +22,7 @@ classdef Airspace
                 
                 %Drawing circels
                 t = linspace(0, 2*pi);
-                r1 = 20;
+                r1 = aircraft.seperation;
                 x1 = aircraft(i).position(1)+r1*cos(t);
                 y1 = aircraft(i).position(2)+r1*sin(t);
                 

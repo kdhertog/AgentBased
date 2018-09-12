@@ -4,8 +4,7 @@ classdef Aircraft
         position
         velocity
         vision
-        seperation
-        collision_count 
+        seperation 
     end
     
     methods
@@ -24,7 +23,7 @@ classdef Aircraft
         
             obj.vision = 50;
             obj.seperation = 20;
-            obj.collision_count = 0;
+            
         end
         
         

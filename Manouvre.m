@@ -5,6 +5,7 @@ classdef Manouvre
         airspace_size
         step_counter=1;
         max_step=100;
+        collision_count=0;
     end
     
     methods
@@ -50,7 +51,7 @@ classdef Manouvre
 
 %                Drawing circels
                t = linspace(0, 2*pi);
-               r1 = 20;
+               r1 = obj.aircraft.seperation;
                x1 = obj.aircraft(i).position(1)+r1*cos(t);
                y1 = obj.aircraft(i).position(2)+r1*sin(t);
                 
@@ -61,6 +62,23 @@ classdef Manouvre
            end
            alpha(0.3)
            drawnow;
+            
+        end
+        
+        function obj = collision(obj)
+            count=0;
+            for i=1:length(obj.aircraft)
+                for j=1:length(obj.aircraft)
+                    if i==j
+                        count=count+0;
+                    
+                    else
+                    count=count+1;
+                    end
+                    
+                end
+                    
+            end
             
         end
         
