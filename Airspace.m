@@ -19,8 +19,18 @@ classdef Airspace
             for i = 1:length(aircraft)
                 x=[aircraft(i).position(1) aircraft(i).position(1)+1 aircraft(i).position(1)+1 aircraft(i).position(1)];
                 y=[aircraft(i).position(2) aircraft(i).position(2) aircraft(i).position(2)+1 aircraft(i).position(2)+1];
-                obj.aircraft_figure_handles(i) = patch(x,y,'green') ;
+                
+                %Drawing circels
+                t = linspace(0, 2*pi);
+                r1 = 20;
+                x1 = aircraft(i).position(1)+r1*cos(t);
+                y1 = aircraft(i).position(2)+r1*sin(t);
+                
+
+                obj.aircraft_figure_handles(i) = patch(x1,y1,'red');
+%                 obj.aircraft_figure_handles(i) = patch(x,y,'green') ;
             end
+            alpha(0.3)
         end
     end
 end

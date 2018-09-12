@@ -20,7 +20,7 @@ classdef Aircraft
             %[position_x, position_y-200] [position_x-200, position_y-200]]
             
             angle = (2*pi).*rand;
-            obj.velocity = [5*cos(angle), 5*sin(angle)];
+            obj.velocity = [cos(angle), sin(angle)];
         
             obj.vision = 50;
             obj.seperation = 20;
