@@ -1,0 +1,49 @@
+classdef Manouvre
+
+    properties
+        aircraft
+        airspace_size
+        step_counter=1;
+        max_step=100;
+    end
+    
+    methods
+        
+        function obj = Manouvre(aircraft, airspace_size)
+            obj.aircraft=aircraft;
+            obj.airspace_size=airspace_size;
+        end
+        
+        function run(obj, airspace)
+            while true
+                obj = update_aircraft(obj);
+                obj = borders(obj);
+                
+                [obj,airspace] = render(obj,airspace);
+                obj.step_counter=obj.step_counter+1;
+                if obj.step_counter >= obj.max_step
+                    break
+           end
+            end
+        end
+        
+        function update_aircraft(obj)
+            for i=1:length(obj.aircraft)
+                obj.aircraft(i)=obj.aircraft.update();
+            end
+        end
+        
+        function borders(obj)
+            for i=1:length(obj.aircraft)
+                obj.aircraft(i)=obj.aircraft.borders(obj.airspace_size);
+            end
+        end
+        
+        function render(obj,airspace)
+           delete(plane.aircraft_figure_handles(i))
+            
+        end
+        
+        
+    end  
+end
