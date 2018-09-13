@@ -69,8 +69,10 @@ classdef Manouvre
         
         function obj = distance_aircraft(obj)
             for i=1:length(obj.aircraft)
-%                 turn = 0
-                aircraft_in_vision=[];
+                %reactive agent
+                turn = 0;
+                % proactive agent  
+%                 aircraft_in_vision=[];
                 for j=1:length(obj.aircraft)
                     if i==j
                         obj.collision_count = obj.collision_count+0;
@@ -92,25 +94,28 @@ classdef Manouvre
                             obj.collision_count = obj.collision_count+1;
                         end
                         
-%                         if distance_aircraft<obj.aircraft(i).vision
-%                             turn = 1
-%                         end
+                        %reactive agent
                         if distance_aircraft<obj.aircraft(i).vision
-%                             aircraft_in_vision=append([aircraft_in_vision],j);
-
-                            temp=[aircraft_in_vision,j];
-                            aircraft_in_vision=temp;
+                            turn = 1;
                         end
+                        
+                        % proactive agent
+%                         if distance_aircraft<obj.aircraft(i).vision
+%                             temp=[aircraft_in_vision,j];
+%                             aircraft_in_vision=temp;
+%                         end
                     
                     end
                 end
                 
-%                 if turn==1
+                %reactive agent
+                obj.aircraft(i)=obj.aircraft(i).reactiveturn(turn);
+                               
+                
+                %proactive agent
+%                 if ~isempty(aircraft_in_vision)
 %                     %execute turning
 %                 end
-                if ~isempty(aircraft_in_vision)
-                    %execute turning
-                end
             end
         end
         
