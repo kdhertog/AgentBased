@@ -3,7 +3,7 @@ classdef Manouvre
     properties
         aircraft
         airspace_size
-        step_counter=1;
+        step_counter=0;
         max_step=100;
         collision_count=0;
     end
@@ -17,13 +17,15 @@ classdef Manouvre
         
         function run(obj, airspace)
             while true
+                obj = distance_aircraft(obj);
                 obj = update_aircraft(obj);
                 obj = borders(obj);
                 
                 [obj,airspace] = render(obj,airspace);
                 obj.step_counter=obj.step_counter+1;
+                disp(['Render ', num2str(obj.step_counter)])
                 if obj.step_counter >= obj.max_step
-                    obj.step_counter
+                    disp(['Number of collisions: ' , num2str(obj.collision_count/2)])
                     break
                 end
             end
@@ -46,14 +48,14 @@ classdef Manouvre
            for i=1:length(obj.aircraft)
                delete(airspace.aircraft_figure_handles(i));
                
-               x=[obj.aircraft(i).position(1) obj.aircraft(i).position(1)+1 obj.aircraft(i).position(1)+1 obj.aircraft(i).position(1)];
-               y=[obj.aircraft(i).position(2) obj.aircraft(i).position(2) obj.aircraft(i).position(2)+1 obj.aircraft(i).position(2)+1];
+%                x=[obj.aircraft(i).position(1) obj.aircraft(i).position(1)+1 obj.aircraft(i).position(1)+1 obj.aircraft(i).position(1)];
+%                y=[obj.aircraft(i).position(2) obj.aircraft(i).position(2) obj.aircraft(i).position(2)+1 obj.aircraft(i).position(2)+1];
 
 %                Drawing circels
                t = linspace(0, 2*pi);
-               r1 = obj.aircraft.seperation;
-               x1 = obj.aircraft(i).position(1)+r1*cos(t);
-               y1 = obj.aircraft(i).position(2)+r1*sin(t);
+               r1 = obj.aircraft.seperation ;
+               x1 = obj.aircraft(i).position(1)+0.5*r1*cos(t);
+               y1 = obj.aircraft(i).position(2)+0.5*r1*sin(t);
                 
 
                airspace.aircraft_figure_handles(i) = patch(x1,y1,'red');
@@ -65,22 +67,70 @@ classdef Manouvre
             
         end
         
-        function obj = collision(obj)
-            count=0;
+        function obj = distance_aircraft(obj)
             for i=1:length(obj.aircraft)
+%                 turn = 0
+                aircraft_in_vision=[];
                 for j=1:length(obj.aircraft)
                     if i==j
-                        count=count+0;
-                    
+                        obj.collision_count = obj.collision_count+0;
                     else
-                    count=count+1;
+                        distance_aircraft=100000;
+                        for k=1:length(obj.aircraft(i).position)/2
+                            distance_x = (obj.aircraft(i).position(1)- obj.aircraft(j).position(2*k-1));
+                            distance_y = (obj.aircraft(i).position(2)- obj.aircraft(j).position(2*k));
+                            distance_option=sqrt(distance_x^2+distance_y^2);
+                            
+                            if distance_option<distance_aircraft
+                                distance_aircraft=distance_option;
+                            end
+                            
+                       
+                        end
+                        
+                        if distance_aircraft<obj.aircraft(i).seperation
+                            obj.collision_count = obj.collision_count+1;
+                        end
+                        
+%                         if distance_aircraft<obj.aircraft(i).vision
+%                             turn = 1
+%                         end
+                        if distance_aircraft<obj.aircraft(i).vision
+%                             aircraft_in_vision=append([aircraft_in_vision],j);
+
+                            temp=[aircraft_in_vision,j];
+                            aircraft_in_vision=temp;
+                        end
+                    
                     end
-                    
                 end
-                    
+                
+%                 if turn==1
+%                     %execute turning
+%                 end
+                if ~isempty(aircraft_in_vision)
+                    %execute turning
+                end
             end
-            
         end
+        
+        
+%         function obj = collision(obj)
+%             count=0;
+%             for i=1:length(obj.aircraft)
+%                 for j=1:length(obj.aircraft)
+%                     if i==j
+%                         count = count+0;
+%                     else
+%                         distance = distant(obj.aircraft(i).position, obj.aircraft(j).position);  
+%                         count = count+1;
+%                     end
+%                     
+%                 end
+%                     
+%             end
+%             
+%         end
         
         
     end  

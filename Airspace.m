@@ -17,14 +17,14 @@ classdef Airspace
             ylim([0 airspace_size(2)]);
             
             for i = 1:length(aircraft)
-                x=[aircraft(i).position(1) aircraft(i).position(1)+1 aircraft(i).position(1)+1 aircraft(i).position(1)];
-                y=[aircraft(i).position(2) aircraft(i).position(2) aircraft(i).position(2)+1 aircraft(i).position(2)+1];
+%                 x=[aircraft(i).position(1) aircraft(i).position(1)+1 aircraft(i).position(1)+1 aircraft(i).position(1)];
+%                 y=[aircraft(i).position(2) aircraft(i).position(2) aircraft(i).position(2)+1 aircraft(i).position(2)+1];
                 
                 %Drawing circels
                 t = linspace(0, 2*pi);
                 r1 = aircraft.seperation;
-                x1 = aircraft(i).position(1)+r1*cos(t);
-                y1 = aircraft(i).position(2)+r1*sin(t);
+                x1 = aircraft(i).position(1)+0.5*r1*cos(t);
+                y1 = aircraft(i).position(2)+0.5*r1*sin(t);
                 
 
                 obj.aircraft_figure_handles(i) = patch(x1,y1,'red');

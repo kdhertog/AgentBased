@@ -9,7 +9,7 @@ classdef Aircraft
     
     methods
         function obj = Aircraft(position_x, position_y)
-            obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x-200, position_y-200];
+            obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x+200, position_y-200];
             
             %[position_x, position_y]
             %OR check for other borders
