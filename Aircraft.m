@@ -33,9 +33,9 @@ classdef Aircraft
 
             if (near_aircraft==1)
                 if obj.turncount <= 0
-                    obj.heading = obj.heading + pi/6;
+                    obj.heading = obj.heading+pi/4;
                     obj.velocity = [cos(obj.heading), sin(obj.heading)];
-                    obj.turncount = 0;
+                    obj.turncount = 20;
                 else
                     obj.turncount = obj.turncount - 1;
                 end

@@ -6,6 +6,7 @@ classdef Manouvre
         step_counter=0;
         max_step=100;
         collision_count=0;
+        clustering
     end
     
     methods
@@ -13,6 +14,7 @@ classdef Manouvre
         function obj = Manouvre(aircraft, airspace_size)
             obj.aircraft=aircraft;
             obj.airspace_size=airspace_size;
+            obj.clustering=zeros(4,100);
         end
         
         function run(obj, airspace)
@@ -23,10 +25,54 @@ classdef Manouvre
                 
                 [obj,airspace] = render(obj,airspace);
                 obj.step_counter=obj.step_counter+1;
+                
+                obj = cluster(obj);
+                
                 disp(['Render ', num2str(obj.step_counter)])
                 if obj.step_counter >= obj.max_step
                     disp(['Number of collisions: ' , num2str(obj.collision_count/2)])
+                    
+                    %Display clustering
+                    x_plot = linspace(0,obj.max_step);
+                    plot(x_plot,obj.clustering(1,:));
+                    title('Distribution plot')
+                    ylim([0 inf])
+                    xlabel('Itteration number')
+                    ylabel('Number of agents')
+                    
+                    hold on
+                    
+                    plot(x_plot,obj.clustering(2,:))
+                    plot(x_plot,obj.clustering(3,:))
+                    plot(x_plot,obj.clustering(4,:))
+                    
+                    legend('Area 1','Area 2','Area 3','Area 4', 'Location','southwest')
+                    
+                    hold off
+                    
+                   
                     break
+                end
+            end
+        end
+        
+        function obj = cluster(obj)
+            for i=1:length(obj.aircraft)
+                position_x=obj.aircraft(i).position(1);
+                position_y=obj.aircraft(i).position(2);
+                
+                if position_x<obj.airspace_size(1)*0.5
+                    if position_y>obj.airspace_size(2)*0.5
+                        obj.clustering(1,obj.step_counter)=obj.clustering(1,obj.step_counter)+1;
+                    else
+                        obj.clustering(3,obj.step_counter)=obj.clustering(3,obj.step_counter)+1;
+                    end
+                else
+                    if position_y>obj.airspace_size(2)*0.5
+                        obj.clustering(2,obj.step_counter)=obj.clustering(2,obj.step_counter)+1;
+                    else
+                        obj.clustering(4,obj.step_counter)=obj.clustering(4,obj.step_counter)+1;
+                    end
                 end
             end
         end
