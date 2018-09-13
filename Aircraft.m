@@ -43,15 +43,15 @@ classdef Aircraft
             
         end
         
-        function obj = proactiveturn(obj, near_aircraft_list)
-            
-            for i = 1:length(near_aircraft_list)
-                
-                near_aircraft_relative_postition = %relative position of the near aircraft (0 - 2pi)
-                %positionlist.append(near_aircraft_relative_postition)
-                    
-            end
-            
+%         function obj = proactiveturn(obj, near_aircraft_list)
+%             
+%             for i = 1:length(near_aircraft_list)
+%                 
+%                 near_aircraft_relative_postition = %relative position of the near aircraft (0 - 2pi)
+%                 %positionlist.append(near_aircraft_relative_postition)
+%                     
+%             end
+%             
             %For each 5 degrees of heading count the amount of aircraft and their distace
             %Assign a heading score for each aircraft
             %Change heading to heading with the best heading score
