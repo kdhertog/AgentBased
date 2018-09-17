@@ -70,9 +70,9 @@ classdef Manouvre
         function obj = distance_aircraft(obj)
             for i=1:length(obj.aircraft)
                 %reactive agent
-                turn = 0;
+                %turn = 0;
                 % proactive agent  
-%                 aircraft_in_vision=[];
+                aircraft_in_vision=[];
                 for j=1:length(obj.aircraft)
                     if i==j
                         obj.collision_count = obj.collision_count+0;
@@ -94,28 +94,32 @@ classdef Manouvre
                             obj.collision_count = obj.collision_count+1;
                         end
                         
-                        %reactive agent
-                        if distance_aircraft<obj.aircraft(i).vision
-                            turn = 1;
-                        end
-                        
-                        % proactive agent
+%                         %reactive agent
 %                         if distance_aircraft<obj.aircraft(i).vision
-%                             temp=[aircraft_in_vision,j];
-%                             aircraft_in_vision=temp;
+%                             turn = 1;
 %                         end
+                        
+                        %proactive agent
+                        if distance_aircraft<obj.aircraft(i).seperation + 3 %CHANGE BACK TO VISION!!!!vision
+                            temp=[aircraft_in_vision,j];
+                            aircraft_in_vision=temp;
+                        end
                     
                     end
                 end
-                
                 %reactive agent
-                obj.aircraft(i)=obj.aircraft(i).reactiveturn(turn);
+                %obj.aircraft(i)=obj.aircraft(i).reactiveturn(turn);
                                
-                
                 %proactive agent
-%                 if ~isempty(aircraft_in_vision)
-%                     %execute turning
-%                 end
+                if ~isempty(aircraft_in_vision)
+                    aircraft_in_vision_aircraft = [];
+                    for l = 1:length(aircraft_in_vision) %Construction to convert the id of the ac in vision to actual aircraft, en use that as input for proactiveturn
+                        temp = [aircraft_in_vision_aircraft,obj.aircraft(aircraft_in_vision(l))];
+                        aircraft_in_vision_aircraft = temp;
+                    end
+                        
+                    obj.aircraft(i) = obj.aircraft(i).proactiveturn(aircraft_in_vision_aircraft);
+                end
             end
         end
         
