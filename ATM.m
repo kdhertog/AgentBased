@@ -1,4 +1,4 @@
-aircraft_count=40;
+aircraft_count=20;
 airspace_size=200;
 aircraft=Aircraft.empty;
 
@@ -11,4 +11,3 @@ f= figure();
 %f= figure('visible','off'); %For an invisible figure
 airspace=Airspace(f,[airspace_size airspace_size],aircraft);
 manouvre.run(airspace);
-
