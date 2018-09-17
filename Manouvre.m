@@ -6,6 +6,7 @@ classdef Manouvre
         step_counter=0;
         max_step=100;
         collision_count=0;
+        true_collision_count=0;
         clustering
     end
     
@@ -31,6 +32,7 @@ classdef Manouvre
 %                 disp(['Render ', num2str(obj.step_counter)])
                 if obj.step_counter >= obj.max_step
                     disp(['Number of collisions: ' , num2str(obj.collision_count/2)])
+                    disp(['Number of true collisions: ' , num2str(obj.true_collision_count/2)])
                     
                     %Display clustering
                     x_plot = linspace(0,obj.max_step);
@@ -116,7 +118,7 @@ classdef Manouvre
         function obj = distance_aircraft(obj)
             for i=1:length(obj.aircraft)
                 %reactive agent
-                %turn = 0;
+                turn = 0;
                 % proactive agent  
                 aircraft_in_vision=[];
                 for j=1:length(obj.aircraft)
@@ -138,17 +140,24 @@ classdef Manouvre
                         
                         if distance_aircraft<obj.aircraft(i).seperation
                             obj.collision_count = obj.collision_count+1;
+                            
+                            if distance_aircraft<1
+                                obj.true_collision_count = obj.true_collision_count+1;
+                            
+                            end
                         end
                         
-%                         %reactive agent
-%                         if distance_aircraft<obj.aircraft(i).vision
-%                             turn = 1;
-%                         end
+                        %reactive agent
+                        if distance_aircraft<obj.aircraft(i).vision
+                            turn = 1;
+                        end
                         
                         %proactive agent
                         if distance_aircraft<obj.aircraft(i).seperation + 3 %CHANGE BACK TO VISION!!!!vision
                             temp=[aircraft_in_vision,j];
                             aircraft_in_vision=temp;
+                            
+                          
                         end
                     
                     end
