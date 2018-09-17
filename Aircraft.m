@@ -96,29 +96,29 @@ classdef Aircraft
            position_x = obj.position(1) + obj.velocity(1); %Add the velocity in x direction to the x coordinate
            position_y = obj.position(2) + obj.velocity(2); %Add the velocity in x direction to the x coordinate
            obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x+200, position_y-200];
-            
+           % Create the position vector again for all of the maps around the main map 
         end
         
         function obj = borders(obj, airspace_size)
-            if obj.position(1) < 0
+            if obj.position(1) < 0 %transfer the aircraft to the right side of the map
                 position_x = obj.position(1)+airspace_size;
                 position_y = obj.position(2);
                 obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x+200, position_y-200];
             end
             
-            if obj.position(2) < 0
+            if obj.position(2) < 0 %transfer the aircraft to the top side of the map
                 position_x = obj.position(1);
                 position_y = obj.position(2)+airspace_size;
                 obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x+200, position_y-200];
             end
             
-            if obj.position(1) > airspace_size
+            if obj.position(1) > airspace_size %transfer the aircraft to the left side of the map
                 position_x = obj.position(1)-airspace_size;
                 position_y = obj.position(2);
                 obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x+200, position_y-200];
             end
             
-            if obj.position(2) > airspace_size
+            if obj.position(2) > airspace_size %transfer the aircraft to the bottom side of the map
                 position_x = obj.position(1);
                 position_y = obj.position(2)-airspace_size;
                 obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x+200, position_y-200];
