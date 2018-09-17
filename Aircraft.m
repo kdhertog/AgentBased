@@ -12,30 +12,29 @@ classdef Aircraft
     methods
         function obj = Aircraft(position_x, position_y)
             obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x+200, position_y-200];
-            
-            %[position_x, position_y]
-            %OR check for other borders
-            %[[position_x, position_y] [position_x-200., position_y+200]
-            %[position_x, position_y+200] [position_x+200, position_y+200] [position_x-200,
-            %position_y] [position_x+200, position_y] [position_x-200, position_y-200]
-            %[position_x, position_y-200] [position_x-200, position_y-200]]
-            
-            obj.heading = (2*pi).*rand;
-            obj.velocity = [cos(obj.heading), sin(obj.heading)];
+            % The postion of the aircraft is given in a x & y component
+            % The postion is duplicated over 8 other maps which are placed
+            % around the main plane. This makes it possible for individual
+            % aircraft to see other aircraft which are close to the on the
+            % other side of the border.
         
-            obj.vision = 50;
-            obj.seperation = 20;
-            obj.turncount =0;
+            
+            obj.heading = (2*pi).*rand; %Aircraft are spawned with a random heading
+            obj.velocity = [cos(obj.heading), sin(obj.heading)]; % The velocity vector has an x & y component
+        
+            obj.vision = 50; % vision of the aircraft
+            obj.seperation = 20; %Min allowed seperation
+            obj.turncount =0; % Property for reactive agent which makes sure that the aircraft does not turn at every tick.
             
         end
         
         function obj = reactiveturn(obj, near_aircraft)
             
-            if near_aircraft == 1
+            if near_aircraft == 1 
                 if obj.turncount <= 0
-                    obj.heading = obj.heading+pi/6;
-                    obj.velocity = [cos(obj.heading), sin(obj.heading)];
-                    obj.turncount = 3;
+                    obj.heading = obj.heading+pi/6; % Change the heading by 30 degrees
+                    obj.velocity = [cos(obj.heading), sin(obj.heading)]; % update velocity
+                    obj.turncount = 3; % The aircraft is now not allowed to turn for 3 ticks
                 else
                     obj.turncount = obj.turncount - 1;
                 end
@@ -94,8 +93,8 @@ classdef Aircraft
         end
                
         function obj = update(obj)
-           position_x = obj.position(1) + obj.velocity(1);
-           position_y = obj.position(2) + obj.velocity(2);
+           position_x = obj.position(1) + obj.velocity(1); %Add the velocity in x direction to the x coordinate
+           position_y = obj.position(2) + obj.velocity(2); %Add the velocity in x direction to the x coordinate
            obj.position = [ position_x, position_y, position_x-200., position_y+200, position_x, position_y+200, position_x+200, position_y+200, position_x-200, position_y, position_x+200, position_y, position_x-200, position_y-200, position_x, position_y-200, position_x+200, position_y-200];
             
         end
