@@ -33,9 +33,9 @@ classdef Aircraft
             
             if near_aircraft == 1
                 if obj.turncount <= 0
-                    obj.heading = obj.heading+pi/4;
+                    obj.heading = obj.heading+pi/6;
                     obj.velocity = [cos(obj.heading), sin(obj.heading)];
-                    obj.turncount = 20;
+                    obj.turncount = 3;
                 else
                     obj.turncount = obj.turncount - 1;
                 end
@@ -67,7 +67,7 @@ classdef Aircraft
                      
             end
             
-            compass_divisions = 36;
+            compass_divisions = 72;
             divided_compass = 360/compass_divisions;
             heading_score = [];
             for i = 1:compass_divisions

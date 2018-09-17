@@ -28,7 +28,7 @@ classdef Manouvre
                 
                 obj = cluster(obj);
                 
-                disp(['Render ', num2str(obj.step_counter)])
+%                 disp(['Render ', num2str(obj.step_counter)])
                 if obj.step_counter >= obj.max_step
                     disp(['Number of collisions: ' , num2str(obj.collision_count/2)])
                     
@@ -170,22 +170,6 @@ classdef Manouvre
         end
         
         
-%         function obj = collision(obj)
-%             count=0;
-%             for i=1:length(obj.aircraft)
-%                 for j=1:length(obj.aircraft)
-%                     if i==j
-%                         count = count+0;
-%                     else
-%                         distance = distant(obj.aircraft(i).position, obj.aircraft(j).position);  
-%                         count = count+1;
-%                     end
-%                     
-%                 end
-%                     
-%             end
-%             
-%         end
         
         
     end  
