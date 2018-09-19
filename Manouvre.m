@@ -8,14 +8,16 @@ classdef Manouvre
         conflict_list=[0]; %List keeps track of conflicts over time
         true_collision_count=0;
         clustering
+        model_type
     end
     
     methods
         
-        function obj = Manouvre(aircraft, airspace_size)
+        function obj = Manouvre(aircraft, airspace_size, model)
             obj.aircraft=aircraft; %List of aircraft
             obj.airspace_size=airspace_size; %Size of the airspace
             obj.clustering=zeros(4,100); %Keep track of clustering per tick
+            obj.model_type = model; %Reactive (0) or proactive (1)
             %CLustering is defined as the amount of aircraf in four evenly
             %devided areas. 
         end
@@ -177,17 +179,21 @@ classdef Manouvre
                 end
                 
                 %reactive agent
-                %obj.aircraft(i)=obj.aircraft(i).reactiveturn(turn);
+                if obj.model_type == 0
+                    obj.aircraft(i)=obj.aircraft(i).reactiveturn(turn);
+                end
                          
                 %proactive agent
-                if ~isempty(aircraft_in_vision) % If there is an aircraft in vision the proactive aircraft should perform a heading change
-                    aircraft_in_vision_aircraft = [];
-                    for l = 1:length(aircraft_in_vision) %Construction to convert the id of the ac in vision to actual aircraft, en use that as input for proactiveturn
-                        temp = [aircraft_in_vision_aircraft,obj.aircraft(aircraft_in_vision(l))];
-                        aircraft_in_vision_aircraft = temp;
+                if obj.model_type == 1
+                    if ~isempty(aircraft_in_vision) % If there is an aircraft in vision the proactive aircraft should perform a heading change
+                        aircraft_in_vision_aircraft = [];
+                        for l = 1:length(aircraft_in_vision) %Construction to convert the id of the ac in vision to actual aircraft, en use that as input for proactiveturn
+                            temp = [aircraft_in_vision_aircraft,obj.aircraft(aircraft_in_vision(l))];
+                            aircraft_in_vision_aircraft = temp;
+                        end
+
+                        obj.aircraft(i) = obj.aircraft(i).proactiveturn(aircraft_in_vision_aircraft);
                     end
-                        
-                    obj.aircraft(i) = obj.aircraft(i).proactiveturn(aircraft_in_vision_aircraft);
                 end
             end
             temp=[obj.conflict_list,collisions_per_turn];
