@@ -8,6 +8,5 @@ end
 
 manouvre=Manouvre(aircraft,[airspace_size, airspace_size]); %Initializes properties of manouvre class
 f= figure(); % Create figure for visualisation
-%f= figure('visible','off'); %For an invisible figure
 airspace=Airspace(f,[airspace_size airspace_size],aircraft); %Initialize figure with aircraft placed in them 
-manouvre.run(airspace); 
+manouvre.run(airspace); %Runs simulation
