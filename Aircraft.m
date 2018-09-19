@@ -30,16 +30,18 @@ classdef Aircraft
         
         function obj = reactiveturn(obj, near_aircraft)
             
-            if near_aircraft == 1 
-                if obj.turncount <= 0 %Only turn if the required time between turns has passed
-                    obj.heading = obj.heading+pi/6; % Change the heading by 30 degrees
-                    obj.velocity = [cos(obj.heading), sin(obj.heading)]; % update velocity
-                    obj.turncount = 3; % The aircraft is now not allowed to turn for 3 ticks
-                else
-                    obj.turncount = obj.turncount - 1; %No turn, so time until next turn can go down
-                end
+            if obj.turncount > 0 %The agent is in the middle of a turn
+                obj.turncount = obj.turncount - 1;
+                obj.heading = obj.heading+pi/18; % Change the heading by 10 degrees
+                obj.velocity = [cos(obj.heading), sin(obj.heading)]; % update velocity
             else
-                obj.turncount = obj.turncount - 1; %No turn, so time until next turn can go down
+                if near_aircraft == 1 %The agent needs to turn
+                    obj.turncount = 2; %The turn is done over three time steps
+                    obj.heading = obj.heading+pi/18; %Change the heading by 10 degrees
+                    obj.velocity = [cos(obj.heading), sin(obj.heading)]; % update velocity
+                else
+                    obj.turncount = obj.turncount - 1;
+                end
             end
         end
         

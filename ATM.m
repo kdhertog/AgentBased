@@ -3,6 +3,7 @@ airspace_size=200; % Length of the square airspace
 aircraft=Aircraft.empty; % Create an aircraft with no values assigned to properties
 model_type = 0; %Reactive = 0, Proactive = 1
 
+
 for i=1:aircraft_count
     aircraft(i)=Aircraft(rand*200,rand*200); %Create aircraft with random position in airspace
 end
