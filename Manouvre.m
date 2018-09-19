@@ -5,8 +5,7 @@ classdef Manouvre
         airspace_size 
         step_counter=0; %Current step
         max_step=100; % Number of steps per simulation
-        conflict_count=0;
-        conflict_list=[0];
+        conflict_list=[0]; %List keeps track of conflicts over time
         true_collision_count=0;
         clustering
     end
@@ -32,41 +31,53 @@ classdef Manouvre
                 
                 obj = cluster(obj); % Gather data for analyzing clustering
                 
-%                 disp(['Render ', num2str(obj.step_counter)])
                 if obj.step_counter >= obj.max_step 
-                    disp(['Number of conflicts: ' , num2str(obj.conflict_count/2)])
-                    disp(['Number of collisions: ' , num2str(obj.true_collision_count/2)])
-                    
-                    %Display clustering
-                    subplot(2,1,1);
-                    x_plot = 1:1:100;
-                    plot(x_plot,obj.clustering(1,:));
-                    title('Distribution plot')
-                    ylim([0 inf])
-                    xlim([1 100])
-                    xlabel('Itteration number')
-                    ylabel('Number of agents')
-                    
-                    hold on
-                    
-                    plot(x_plot,obj.clustering(2,:))
-                    plot(x_plot,obj.clustering(3,:))
-                    plot(x_plot,obj.clustering(4,:))
-                    
-                    legend('Area 1','Area 2','Area 3','Area 4', 'Location','southwest')
-                    hold off
-                    
-                    subplot(2,1,2);
-                    x=0:1:100;
-                    plot(x,obj.conflict_list)
-                    xlabel('Itteration number')
-                    ylabel('Number of conflicts')
+                    graphs(obj);
                     break % Stop simulation
                 end
             end
         end
         
-        function obj = cluster(obj) % Visualize clustering in graph
+        function obj = graphs(obj)
+            disp(['Number of conflicts: ' , num2str(obj.conflict_list(end))])
+            disp(['Number of collisions: ' , num2str(obj.true_collision_count)])
+
+            %Display clustering of aircraft in certain areas of the map.
+            %According to the following distribution
+            
+            %##--------##--------##
+            %## Area 1 ## Area 2 ##
+            %##--------##--------##
+            %## Area 3 ## Area 4 ##
+            %##--------##--------##
+            
+            subplot(2,1,1);
+            x_plot = 1:1:100;
+            plot(x_plot,obj.clustering(1,:));
+            title('Distribution plot')
+            ylim([0 inf])
+            xlim([1 100])
+            xlabel('Itteration number')
+            ylabel('Number of agents')
+
+            hold on
+
+            plot(x_plot,obj.clustering(2,:))
+            plot(x_plot,obj.clustering(3,:))
+            plot(x_plot,obj.clustering(4,:))
+
+            legend('Area 1','Area 2','Area 3','Area 4', 'Location','southwest')
+            hold off
+
+            subplot(2,1,2); % Create the plot of conflicts over time
+            x=0:1:100;
+            plot(x,obj.conflict_list)
+            xlabel('Itteration number')
+            ylabel('Number of conflicts')
+        end
+            
+       
+        function obj = cluster(obj) % For each tick the number of aircraft in each divided area is counted. 
             for i=1:length(obj.aircraft)
                 position_x=obj.aircraft(i).position(1);
                 position_y=obj.aircraft(i).position(2);
@@ -99,12 +110,13 @@ classdef Manouvre
             end
         end
         
-        function [obj,airspace] = render(obj,airspace)
+        function [obj,airspace] = render(obj,airspace) % Update the figure with the aircraft in their new position
                       
            for i=1:length(obj.aircraft)
                delete(airspace.aircraft_figure_handles(i)); %Delete aircraft on their previous posiion
               
-%                Drawing circels
+%              Drawing circels with half the radius of a conflict around
+%              each agent.
                t = linspace(0, 2*pi);
                r1 = obj.aircraft.seperation ;
                x1 = obj.aircraft(i).position(1)+0.5*r1*cos(t);
@@ -118,17 +130,16 @@ classdef Manouvre
             
         end
         
+        
         function obj = distance_aircraft(obj)
             collisions_per_turn=obj.conflict_list(end);
             for i=1:length(obj.aircraft)
                 %reactive agent
                 turn = 0; % Binary
                 % proactive agent  
-                aircraft_in_vision=[]; %Create a list of integer with aircraft in the neighbourhood
+                aircraft_in_vision=[]; %Create a list of integers of aircraft within their vision
                 for j=1:length(obj.aircraft)
-                    if i==j % This will compare the same aircraft with each other
-                        obj.conflict_count = obj.conflict_count+0; 
-                    else
+                    if i~=j % Comparing two of the same aircraft should not count as a collision
                         distance_aircraft=100000; % Create arbitrary large distance as starting point
                         for k=1:length(obj.aircraft(i).position)/2 %Find closest ditance, also by crosing borders
                             distance_x = (obj.aircraft(i).position(1)- obj.aircraft(j).position(2*k-1));
@@ -136,18 +147,17 @@ classdef Manouvre
                             distance_option=sqrt(distance_x^2+distance_y^2);
                             
                             if distance_option<distance_aircraft
-                                distance_aircraft=distance_option; % This is the shortest distance between the two aircraft
+                                distance_aircraft=distance_option; % This is the shortest distance between the two aircraft, this can be indirect through a border.
                             end
                             
                        
                         end
                         
                         if distance_aircraft<obj.aircraft(i).seperation % Check if they are to close to each other
-                            obj.conflict_count = obj.conflict_count+1;
-                            collisions_per_turn=collisions_per_turn+0.5;
+                            collisions_per_turn=collisions_per_turn+0.5; % A conflict counts for 0.5 since both aircraft will see that they are to close to each other/ 
                             
                             if distance_aircraft<1 % If the two aircraft actually collide with each other
-                                obj.true_collision_count = obj.true_collision_count+1;
+                                obj.true_collision_count = obj.true_collision_count+0.5;
                             
                             end
                         end
@@ -158,11 +168,9 @@ classdef Manouvre
                         end
                         
                         %proactive agent
-                        if distance_aircraft<obj.aircraft(i).seperation + (obj.aircraft(i).vision-obj.aircraft(i).seperation)*0.2
+                        if distance_aircraft<obj.aircraft(i).seperation + (obj.aircraft(i).vision-obj.aircraft(i).seperation)*0.1
                             temp=[aircraft_in_vision,j];
-                            aircraft_in_vision=temp;
-                            
-                          
+                            aircraft_in_vision=temp;  
                         end
                     
                     end
@@ -170,7 +178,7 @@ classdef Manouvre
                 
                 %reactive agent
                 %obj.aircraft(i)=obj.aircraft(i).reactiveturn(turn);
-                               
+                         
                 %proactive agent
                 if ~isempty(aircraft_in_vision) % If there is an aircraft in vision the proactive aircraft should perform a heading change
                     aircraft_in_vision_aircraft = [];
@@ -184,10 +192,7 @@ classdef Manouvre
             end
             temp=[obj.conflict_list,collisions_per_turn];
             obj.conflict_list=temp;
-        end
-        
-        
-        
+        end  
         
     end  
 end
