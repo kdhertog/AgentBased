@@ -5,7 +5,7 @@ classdef Manouvre
         airspace_size 
         step_counter=0; %Current step
         max_step=100; % Number of steps per simulation
-        conflict_list=[0]; %List keeps track of conflicts over time
+        conflict_list=0; %List keeps track of conflicts over time
         true_collision_count=0;
         clustering
         model_type
