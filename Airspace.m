@@ -27,7 +27,7 @@ classdef Airspace
                 obj.aircraft_figure_handles(i) = patch(x1,y1,'red'); 
                 % A circle with a radius of half the allowed seperation is
                 % drawn around each aircraft. If two circles collide this
-                % is counted as a collision. 
+                % is counted as a conflict. 
             end
             alpha(0.3) % Transparency of the circles.
         end
