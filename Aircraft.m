@@ -48,8 +48,8 @@ classdef Aircraft
             for i = 1:length(near_aircraft_list) %Near_aircraft_list compasses the id's of all near aircraft
                 distance_aircraft=100000;
                 for j=1:length(obj.position)/2
-                   distance_x_option = (obj.position(1) - near_aircraft_list(i).position(2*j-1));
-                   distance_y_option = (obj.position(2) - near_aircraft_list(i).position(2*j));
+                   distance_x_option = (near_aircraft_list(i).position(2*j-1)-obj.position(1));
+                   distance_y_option = (near_aircraft_list(i).position(2*j)-obj.position(2));
                    distance_option=sqrt(distance_x_option^2+distance_y_option^2);
                             
                    if distance_option<distance_aircraft
@@ -60,14 +60,14 @@ classdef Aircraft
                     
                 end
                  
-                near_aircraft_relative_position = atan2d(distance_y,distance_x) + 360*(distance_y<0); %For every near aircraft the relative position_angle gets calculated, and stored in a list
+                near_aircraft_relative_position = atan2(distance_y,distance_x) + 2*pi*(distance_y<0); %For every near aircraft the relative position_angle gets calculated, and stored in a list
                 temp=[near_aircraft_headings,near_aircraft_relative_position];
                 near_aircraft_headings=temp; %In the end of the for loop, near_aircraft_headings compasses the relative positions off all near aircraft, tough they are not cooupled to a certain aircraft
                      
             end
             
-            compass_divisions = 72;
-            divided_compass = 360/compass_divisions;
+            compass_divisions = 36;
+            divided_compass = 2*pi/compass_divisions;
             heading_score = [];
             for i = 1:compass_divisions
                 temp1 = length(near_aircraft_headings(i*divided_compass-divided_compass <= near_aircraft_headings & near_aircraft_headings < i*divided_compass));
@@ -80,7 +80,7 @@ classdef Aircraft
 %             obj.velocity = [cos(obj.heading), sin(obj.heading)];
 
             [~, worst_heading] = max(heading_score);
-            obj.heading = worst_heading * divided_compass + 180;
+            obj.heading = worst_heading * divided_compass+pi;
             obj.velocity = [cos(obj.heading), sin(obj.heading)];
             
 %             disp(obj.position)

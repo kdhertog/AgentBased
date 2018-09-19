@@ -1,4 +1,4 @@
-aircraft_count=20; % Number of aircraft in airspace
+aircraft_count=40; % Number of aircraft in airspace
 airspace_size=200; % Length of the square airspace
 aircraft=Aircraft.empty; % Create an aircraft with no values assigned to properties
 

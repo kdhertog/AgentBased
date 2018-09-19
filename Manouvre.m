@@ -150,7 +150,7 @@ classdef Manouvre
                         end
                         
                         %proactive agent
-                        if distance_aircraft<obj.aircraft(i).seperation + 3 %CHANGE BACK TO VISION!!!!vision
+                        if distance_aircraft<obj.aircraft(i).seperation + (obj.aircraft(i).vision-obj.aircraft(i).seperation)*0.2
                             temp=[aircraft_in_vision,j];
                             aircraft_in_vision=temp;
                             
