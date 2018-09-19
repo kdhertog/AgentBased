@@ -9,4 +9,4 @@ end
 manouvre=Manouvre(aircraft,[airspace_size, airspace_size]); %WAT DOET DIT?
 f= figure(); % Create figure for visualisation
 airspace=Airspace(f,[airspace_size airspace_size],aircraft); %Initialize figure with aircraft placed in them 
-manouvre.run(airspace); %WAT DOET DIT?
+manouvre.run(airspace); %Runs simulation
