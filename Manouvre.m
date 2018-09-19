@@ -6,7 +6,7 @@ classdef Manouvre
         step_counter=0; %Current step
         max_step=100; % Number of steps per simulation
         conflict_list=0; %List keeps track of conflicts over time
-        true_collision_count=0;
+        true_collision_count=0; % Keeps track of the amount of times an aircraft is within a distance of 1 between each other
         clustering
         model_type
     end
@@ -197,7 +197,7 @@ classdef Manouvre
                 end
             end
             temp=[obj.conflict_list,collisions_per_turn];
-            obj.conflict_list=temp;
+            obj.conflict_list=temp; % Add the conflicts of the current tick to the total list, containing collisions per tick
         end  
         
     end  
