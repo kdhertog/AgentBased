@@ -4,9 +4,15 @@ classdef Manouvre
         aircraft
         airspace_size 
         step_counter=0; %Current step
+<<<<<<< HEAD:Assignment 1/Manouvre.m
         max_step=500; % Number of steps per simulation
         conflict_list=[0]; %List keeps track of conflicts over time
         true_collision_count=0;
+=======
+        max_step=100; % Number of steps per simulation
+        conflict_list=0; %List keeps track of conflicts over time
+        true_collision_count=0; % Keeps track of the amount of times an aircraft is within a distance of 1 between each other
+>>>>>>> cd7ee68f0a1911766f510e8ebdd30fa69a9807e2:Manouvre.m
         clustering
         model_type
     end
@@ -69,6 +75,11 @@ classdef Manouvre
             plot(x_plot,obj.clustering(4,:))
 
             legend('Area 1','Area 2','Area 3','Area 4', 'Location','southwest')
+            % Area 1 = top left
+            % Area 2 = top right
+            % Area 3 = bottom left
+            % Area 4 = bottom right
+            
             hold off
 
             subplot(2,1,2); % Create the plot of conflicts over time
@@ -197,7 +208,7 @@ classdef Manouvre
                 end
             end
             temp=[obj.conflict_list,collisions_per_turn];
-            obj.conflict_list=temp;
+            obj.conflict_list=temp; % Add the conflicts of the current tick to the total list, containing collisions per tick
         end  
         
     end  
