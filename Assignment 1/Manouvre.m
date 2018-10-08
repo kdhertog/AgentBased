@@ -4,7 +4,7 @@ classdef Manouvre
         aircraft
         airspace_size 
         step_counter=0; %Current step
-        max_step=100; % Number of steps per simulation
+        max_step=500; % Number of steps per simulation
         conflict_list=[0]; %List keeps track of conflicts over time
         true_collision_count=0;
         clustering
@@ -16,7 +16,7 @@ classdef Manouvre
         function obj = Manouvre(aircraft, airspace_size, model)
             obj.aircraft=aircraft; %List of aircraft
             obj.airspace_size=airspace_size; %Size of the airspace
-            obj.clustering=zeros(4,100); %Keep track of clustering per tick
+            obj.clustering=zeros(4,obj.max_step); %Keep track of clustering per tick
             obj.model_type = model; %Reactive (0) or proactive (1)
             %CLustering is defined as the amount of aircraf in four evenly
             %devided areas. 
@@ -54,12 +54,12 @@ classdef Manouvre
             %##--------##--------##
             
             subplot(2,1,1);
-            x_plot = 1:1:100;
+            x_plot = 1:1:obj.max_step;
             plot(x_plot,obj.clustering(1,:));
             title('Distribution plot')
             ylim([0 inf])
-            xlim([1 100])
-            xlabel('Itteration number')
+            xlim([1 obj.max_step])
+            xlabel('Iteration number')
             ylabel('Number of agents')
 
             hold on
@@ -72,9 +72,9 @@ classdef Manouvre
             hold off
 
             subplot(2,1,2); % Create the plot of conflicts over time
-            x=0:1:100;
+            x=0:1:obj.max_step;
             plot(x,obj.conflict_list)
-            xlabel('Itteration number')
+            xlabel('Iteration number')
             ylabel('Number of conflicts')
         end
             
