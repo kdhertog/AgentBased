@@ -91,6 +91,11 @@ function flightsInitialData = generateFlights(nAircraft,Vmax,MFuelSolo, ...
 % current formation. The default code distributes the future fuel savings
 % between the flights of the formation based on property 19 (weight
 % factor).
+% 29: Best Bid of previous round. Containes the best value of fuel saving over delay
+% ratio the agent could chose in the previous round. At the beginning of
+% each CNP. 
+% 30: Current best Bid. Contains the potential fuel savings which the agent
+% could chose during the current CNP round. 
 
 % special cases: 
 % * More dummy flights may be required to cover aircraft that switch
@@ -118,7 +123,7 @@ destinationAirports = [destinationAirportsX destinationAirportsY];
 
 % Predefine for performance. 2*nAircraft additional rows are created as
 % dummy flights. These dummy flights act as formation navigators.
-flightsInitialData = zeros(3*nAircraft,28); 
+flightsInitialData = zeros(3*nAircraft,30); 
 
 %% Generate the initial properties for all flights. 
 % Each row indicates the properties for one flight.
@@ -153,6 +158,8 @@ for i = 1:nAircraft
     flightsInitialData(i,20) = 0;
     flightsInitialData(i,21) = 1; 
     flightsInitialData(i,22) = 0;
+    fligthsInitialData(i,29) = 0;
+    fligthsInitialData(i,30) = 0;
 end
 
 %% Determine the starting weight of all real flights. 
