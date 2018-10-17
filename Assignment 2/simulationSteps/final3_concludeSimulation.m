@@ -18,18 +18,18 @@
 
 % Actual fuel savings, comparing the actual fuel use to the total fuel
 % use if of only solo flights were flown.
-fuelSavingsTotalPerRun(simrun) = fuelSavingsTotal; % [kg]
+fuelSavingsTotalPerRun(simrun) = fuelSavingsTotal % [kg]
 
 % Percentual fuel savings, comparing the actual fuel use to the total fuel
 % use if of only solo flights were flown.
-fuelSavingsTotalPctPerRun(simrun) = fuelSavingsTotalPct; % [%]
+fuelSavingsTotalPctPerRun(simrun) = fuelSavingsTotalPct % [%]
 
 % Percentage of the total fuel savings that went to the alliance.
-fuelSavingsAlliancePctPerRun(simrun) = fuelSavingsAlliancePct; % [%]
+fuelSavingsAlliancePctPerRun(simrun) = fuelSavingsAlliancePct % [%]
 
 % Percentage of the total fuel savings that went to the non-alliance
 % flights.
-fuelSavingsNonAlliancePctPerRun(simrun) = fuelSavingsNonAlliancePct; % [%]
+fuelSavingsNonAlliancePctPerRun(simrun) = fuelSavingsNonAlliancePct % [%]
 
 % Percentual change in total distance, comparing the actual total distance
 % to the total distance if only solo flights were flown.

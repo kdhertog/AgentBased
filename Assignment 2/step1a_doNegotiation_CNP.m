@@ -40,19 +40,19 @@
     
     %A penalty is needed in reward is needed if a alliance member bids as a
     %contractor on a non-allaince manager
-    noAlliancePenatly=0.8;
+    noAlliancePenatly=0.6;
     
     %The percentage of the best solution at which the agent will decided
     %tom make in bid in the current round
-    bidratio=0.8;
+    bidratio=0.9;
     
     %Fuel save over delay  for alliance flights when they only want to
     %fly together with alliance partners
-    FuelRatioAlliance=40;
+    FuelRatioAlliance=35;
     
     %Fuel save over delay for any combination between allaince flights and
     %non-allaince flights. This is ratio is also used for all contractors
-    FuelRatioNonAlliance=30;
+    FuelRatioNonAlliance=25;
     
     %Create an array with each aircraft and how many possible communication
     %partners there are for each aircraft. The one with most possible
@@ -117,7 +117,7 @@ for i = 1:length(communicationCandidates(:,1))
                 %Determine if the formation leader of acNr2 is part of the allaince or not
                 %This is checked by looking at all aircraft with the
                 %same coordinates.
-                if flightsData(acNr2,17) == 1          
+                if flightsData(acNr2,21) == 2          
                     AircrafInFormation=find(flightsData(1:nAircraft,8)== ...
                         flightsData(acNr2,8) & ...
                     flightsData(1:nAircraft,14)==flightsData(acNr2,14) & ...
@@ -152,6 +152,7 @@ for i = 1:length(communicationCandidates(:,1))
                             if ~isempty(flightsData(acNr2,29)) && ...
                                     FuelDelayRatio*(1-devision)>bidratio* ...
                                     flightsData(acNr2,29)
+
                                 Bids=[Bids;acNr2,FuelDelayRatio*devision ...
                                 ,devision,AllianceacNr2];
                             end                            
@@ -198,15 +199,13 @@ for i = 1:length(communicationCandidates(:,1))
                         end 
                     end
                 end
-
-                
             end
         end
 
         if  isempty(Bids)==0
             %Find the best bid that the contractor received in terms of
             %fuel save over delay ratio. 
-            BestBid=max(Bids(:,2))
+            BestBid=max(Bids(:,2));
             Bidnumber=find(Bids(:,2)==BestBid);
             
             % If acNr1 is part of the alliance, a distinction is made
@@ -222,10 +221,11 @@ for i = 1:length(communicationCandidates(:,1))
                 % other bids
                 if ~isempty(AllianceBids) && ...
                         AllianceBids(BidnumberAlliance(1),2)>FuelRatioAlliance
-                    acNr2=Bids(BidnumberAlliance(1),1);
+                    acNr2=AllianceBids(BidnumberAlliance(1),1);
                     step1b_routingSynchronizationFuelSavings;
                     fuelSavingsOffer = AllianceBids(BidnumberAlliance(1),2)*timeAdded_acNr1;
                     divisionFutureSavings=AllianceBids(BidnumberAlliance(1),3);
+                    step1c_updateProperties
                 else
                     % If the bids from alliance members are not good
                     % enough bids from non alliance partners are also
@@ -235,6 +235,7 @@ for i = 1:length(communicationCandidates(:,1))
                         step1b_routingSynchronizationFuelSavings;
                         fuelSavingsOffer = Bids(Bidnumber(1),2)*timeAdded_acNr1;
                         divisionFutureSavings=Bids(Bidnumber(1),3);
+                        step1c_updateProperties
                     end
                 end
                 
@@ -247,11 +248,11 @@ for i = 1:length(communicationCandidates(:,1))
                     step1b_routingSynchronizationFuelSavings;
                     fuelSavingsOffer = Bids(Bidnumber(1),2)*timeAdded_acNr1;
                     divisionFutureSavings=Bids(Bidnumber(1),3);
+                    step1c_updateProperties
                 end
             end
             % Update the relevant flight properties for the formation
             % that is accepted.
-            step1c_updateProperties
         end 
     end   
 end
