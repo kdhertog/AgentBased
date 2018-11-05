@@ -38,6 +38,8 @@ fuelSaveDelayRatioRequired = 30;
 
 factorNonAllianceAuctioneer = 0.8;
 
+coordination = 1;
+
 %Create an array with each aircraft and how many possible communication
 %partners there are for each aircraft. The one with most possible
 %connection is selected as first for auctioneer. 
@@ -103,7 +105,8 @@ for i = 1:length(communicationCandidates(:,1))
             auction = 1;
       
             while auction == 1
-                
+        
+                alliancePotentialFuelSavings = [];
                 %test = "New For Loop"
                 BiddersToBeRemoved = [];
                 for j = 1:nBidders
@@ -137,6 +140,15 @@ for i = 1:length(communicationCandidates(:,1))
                         %Determine to bid or not. If there is a potential for
                         %FuelSavings, the agent wants to bid. 
                         bidDecisionFactor = potentialFuelSavings;
+                        
+                        %If the bidder is alliance we want to store the
+                        %fuel savings, to determine which alliance bidder
+                        %will stay.
+                        if AllianceacNr2 == 2  
+                            test = "ALLIANCE";
+                            alliancePotentialFuelSavings = [alliancePotentialFuelSavings, [IndexacNr2, potentialFuelSavings]]; %#ok<AGROW>
+                        end
+                        
                         bidTreshold = 0; %bidDecision factor should be bigger than this
 
                         if bidDecisionFactor > bidTreshold
@@ -175,24 +187,30 @@ for i = 1:length(communicationCandidates(:,1))
                                         ,devision,AllianceacNr2]; %#ok<AGROW>
 
                                 else %Remove agent from bidders
-                                    %test = "REMOVE BIDDER1"
+                                    test = "REMOVE BIDDER1";
                                     BiddersToBeRemoved = [BiddersToBeRemoved,IndexacNr2]; %#ok<AGROW>
                                 end
 
                         else
                                 %The agent does not want to bid, so he gets
                                 %removed from the collection of bidders
-                                %test = "REMOVE BIDDER2"
+                                test = "REMOVE BIDDER2";
                                 BiddersToBeRemoved = [BiddersToBeRemoved,IndexacNr2]; %#ok<AGROW>
                         end
                         
                     else
                         %The agent is not able to communicate, so he gets
                         %removed from the collection of bidders
-                        %test = "REMOVE BIDDER3"
+                        test = "REMOVE BIDDER3";
                         BiddersToBeRemoved = [BiddersToBeRemoved,IndexacNr2]; %#ok<AGROW>
                     end
                     
+                end
+                %Coordination: only the alliance flight with the highest
+                %potential for fuel saving will keep bidding
+                if coordination == 1 && isempty(alliancePotentialFuelSavings) == 0
+                    maxAlliance = max(alliancePotentialFuelSavings(:,2));
+                    BiddersToBeRemoved = [BiddersToBeRemoved,alliancePotentialFuelSavings(alliancePotentialFuelSavings(:,1) ~= maxAlliance)]; %#ok<AGROW>
                 end
                 
                 %Remove bidders from the bidder list
