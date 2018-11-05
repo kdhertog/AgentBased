@@ -31,49 +31,67 @@
 % (determineRoutingAndSynchronization.m, calculateFuelSavings.m) and
 % step1c_updateProperties.m.
 
+
 %% Loop through the combinations of flights that are allowed to communicate.
+
+%Create an array with each aircraft and how many possible communication
+%partners there are for each aircraft. The one with most possible
+%connection is selected as first for auctioneer. 
+NumberofCandidates=[];
+for i = 1:length(communicationCandidates(:,1)) 
+    NumberofCandidates=[NumberofCandidates;communicationCandidates(i,1),nnz(communicationCandidates(i,2:end))]; %#ok<AGROW>
+end
+Auctioneerorder=sortrows(NumberofCandidates,2,'descend');
+
 for i = 1:length(communicationCandidates(:,1))     
     % Store flight ID of flight i in variable.
-    acNr1 = communicationCandidates(i,1);     
+    acNr1 = Auctioneerorder(i,1);     
     
     % Determine the number of communication candidates for flight i.
-    nCandidates = nnz(communicationCandidates(i,2:end)); 
-
-    % Loop over all candidates of flight i.
-    for j = 2:nCandidates+1
-        % Store flight ID of candidate flight j in variable.
-        acNr2 = communicationCandidates(i,j);  
+    nCandidates = Auctioneerorder(i,2); 
+    
+    %Bids for each auction are stored in the following list. The first
+    %entry is the flight ID, second is the fuel saved over delay mutiplied 
+    %times the division. Third is the devision ratio for acNr1 w.r.t. the 
+    %total earnings. The forth parameter determines if the bid comes from 
+    %the alliance or not.
+    Bids=[];
+    
+    %Check if the aircraft is able to communicate, if it has candidates to
+    %communicate with, and if it can have additional delay. If this is the
+    %case the agent will become auctioneer.
+    if flightsData(acNr1,2) == 1 && nCandidates > 0 && ...
+            flightsData(acNr1,26) > managerDelayDecision
         
-        % Check whether the flights are still available for communication.
-        if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1             
-            % This file contains code to perform the routing and
-            % synchronization, and to determine the potential fuel savings.
-            step1b_routingSynchronizationFuelSavings
-
-            % If the involved flights can reduce their cumulative fuel burn
-            % the formation route is accepted. This shows the greedy
-            % algorithm, where the first formation with positive fuel
-            % savings is accepted.
-            if potentialFuelSavings > 0     
-                % In the greedy algorithm the fuel savings are divided
-                % equally between acNr1 and acNr2, according to the
-                % formation size of both flights. In the auction the value
-                % of fuelSavingsOffer is decided upon by the bidding agent.
-                fuelSavingsOffer = potentialFuelSavings* ...
-                    flightsData(acNr1,19)/ ...
-                    (flightsData(acNr1,19) + flightsData(acNr2,19));
-
-                % In the greedy algorithm the future fuel savings are
-                % divided equally between acNr1 and acNr2, according to the
-                % formation size of both flights. This is also the case for
-                % the auctions.
-                divisionFutureSavings = flightsData(acNr1,19)/ ...
-                    (flightsData(acNr1,19) + flightsData(acNr2,19));
-                
-                % Update the relevant flight properties for the formation
-                % that is accepted.
-                step1c_updateProperties
-            end          
+        %Find out wether the leader of the group is part of the alliance or
+        %not. To determine this, first the aircraft in formation need to be determined.
+        %If they do not fly in formation the alliance can be retrieved
+        %directly
+        if flightsData(acNr1,17) == 1          
+            AircrafInFormation=find(flightsData(1:nAircraft,8)==flightsData(acNr1,8) & ...
+                flightsData(1:nAircraft,14)==flightsData(acNr1,14) & ...
+                flightsData(1:nAircraft,15)==flightsData(acNr1,15) & ...
+                flightsData(1:nAircraft,16)==flightsData(acNr1,16));
+            acLeader=min(AircrafInFormation);
+            AllianceacNr1=flightsData(acLeader,25);
+        else
+            AllianceacNr1=flightsData(acNr1,25);
+        end 
+        
+        %Initially all communication candidates have the option to bid in
+        %the auction
+        bidders = communicationCandidates;
+        
+        %Find the index acNr1 in the list of bidders
+        IndexacNr1 = find(bidders(:,1)==acNr1);
+        
+        %Start the auction
+        auction = 1;
+        
+        while auction == 1
+            
         end
     end
 end
+
+
