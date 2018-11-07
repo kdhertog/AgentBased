@@ -74,7 +74,6 @@ addpath('agentModels/Japanese')
 addpath('agentModels/first') 
 
 %% Load parameters, predefine performance indicators.
-
 % Set variable parameters.
 prep1_setParameters;
 % Load fixed parameters.
@@ -168,5 +167,4 @@ end
 % bar(ax3, [fuelSaveDelayRatioAlliancePerRun fuelSaveDelayRatioPerRun])
 % ax4 = subplot(2,2,4);
 % bar(ax4,[fuelSavingsAlliancePctPerRun fuelSavingsNonAlliancePctPerRun])
-disp([FuelRatioAlliance, mean(fuelSaveAlliancePerRun)]);
-FuelRatioAlliance=FuelRatioAlliance+5;
+disp([noAlliancePenalty, mean(fuelSaveAlliancePerRun)]);
