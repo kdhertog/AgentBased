@@ -306,6 +306,7 @@ for i = 1:length(communicationCandidates(:,1))
                 else
                     BestCoordination=0;
                 end
+                
                 %Create a list with all the elements that come from the
                 %allaince
                 AllianceBids=Bids(Bids(:,4)==2,:);
@@ -317,19 +318,22 @@ for i = 1:length(communicationCandidates(:,1))
                 if coordination==1 &&~isempty(AllianceBids) && ...
                         BestCoordination>2*AllianceBids(BidnumberAlliance(1),2) ...
                         && BestCoordination>2*FuelRatioAlliance
-                    disp("Coordination applied")
+                    disp("Coordination 1 applied")
                     acNr1=AllianceacNr1;
                     acNr2=AllianceacNr2;
                     step1b_routingSynchronizationFuelSavings;
-                    fuelSavingsOffer = timeAdded_acNr1 / (timeAdded_acNr1+ ...
-                        timeAdded_acNr2);
-                    divisionFutureSavings=fuelSavingsOffer;
+                    fuelSavingsOffer = potentialFuelSavings* ...
+                        timeAdded_acNr1 / (timeAdded_acNr1+ ...
+                        timeAdded_acNr2+1e-8);
+                    divisionFutureSavings=timeAdded_acNr1 / ...
+                        (timeAdded_acNr1+ timeAdded_acNr2+1e-8);
                     step1c_updateProperties
                 elseif ~isempty(AllianceBids) && ...
                         AllianceBids(BidnumberAlliance(1),2)>FuelRatioAlliance
                     acNr2=AllianceBids(BidnumberAlliance(1),1);
                     step1b_routingSynchronizationFuelSavings;
-                    fuelSavingsOffer = AllianceBids(BidnumberAlliance(1),3);
+                    fuelSavingsOffer = potentialFuelSavings*...
+                        AllianceBids(BidnumberAlliance(1),3);
                     divisionFutureSavings=AllianceBids(BidnumberAlliance(1),3);
                     step1c_updateProperties
                 else
@@ -339,19 +343,22 @@ for i = 1:length(communicationCandidates(:,1))
                     if coordination==1 && BestCoordination > ...
                             2*Bids(Bidnumber(1),2) && BestCoordination > ...
                             2*FuelRatioNonAlliance
-                        disp("Coordination applied")
+                        disp("Coordination 2 applied")
                         acNr1=AllianceacNr1;
                         acNr2=AllianceacNr2;
                         step1b_routingSynchronizationFuelSavings;
-                        fuelSavingsOffer = timeAdded_acNr1 / (timeAdded_acNr1+ ...
-                            timeAdded_acNr2);
-                        divisionFutureSavings=fuelSavingsOffer;
+                        fuelSavingsOffer = potentialFuelSavings* ...
+                            timeAdded_acNr1 / (timeAdded_acNr1+ ...
+                            timeAdded_acNr2+1e-8);
+                        divisionFutureSavings=timeAdded_acNr1 / ...
+                            (timeAdded_acNr1+ timeAdded_acNr2+1e-8);
                         step1c_updateProperties
                         
                     elseif Bids(Bidnumber(1),2)>FuelRatioNonAlliance
                         acNr2=Bids(Bidnumber(1),1);
                         step1b_routingSynchronizationFuelSavings;
-                        fuelSavingsOffer = Bids(Bidnumber(1),3);
+                        fuelSavingsOffer = potentialFuelSavings*...
+                            Bids(Bidnumber(1),3);
                         divisionFutureSavings=Bids(Bidnumber(1),3);
                         step1c_updateProperties
                     end
@@ -364,7 +371,8 @@ for i = 1:length(communicationCandidates(:,1))
                 if Bids(Bidnumber(1),2)>FuelRatioNonAlliance
                     acNr2=Bids(Bidnumber(1),1);
                     step1b_routingSynchronizationFuelSavings;
-                    fuelSavingsOffer = Bids(Bidnumber(1),3);
+                    fuelSavingsOffer = potentialFuelSavings*...
+                    Bids(Bidnumber(1),3);
                     divisionFutureSavings=Bids(Bidnumber(1),3);
                     step1c_updateProperties
                 end
