@@ -48,11 +48,11 @@ bidratio=0.8;
 
 %Fuel save over delay  for alliance flights when they only want to
 %fly together with alliance partners
-FuelRatioAlliance=25;
+FuelRatioAlliance=25*multiplier;
 
 %Fuel save over delay for any combination between allaince flights and
 %non-allaince flights. This is ratio is also used for all contractors
-FuelRatioNonAlliance=10;
+FuelRatioNonAlliance=10*multiplier;
 
 %Create an array with each aircraft and how many possible communication
 %partners there are for each aircraft. The one with most possible
