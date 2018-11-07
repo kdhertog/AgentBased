@@ -105,7 +105,7 @@ for i = 1:length(communicationCandidates(:,1))
             auction = 1;
       
             while auction == 1
-        
+                
                 alliancePotentialFuelSavings = [];
                 %test = "New For Loop"
                 BiddersToBeRemoved = [];

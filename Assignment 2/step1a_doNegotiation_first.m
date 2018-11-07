@@ -161,15 +161,14 @@ for i = 1:length(communicationCandidates(:,1))
             %with the division) (Only if there is a bid, else
             %no formation is formed
             if isempty(Bids) == 0
-                Bids
-                bestBid = max(Bids(:,2))
-                Bidnumber=find(Bids(:,2)==bestBid)
-                acNr2 = Bids(Bidnumber(1),1)
+                bestBid = max(Bids(:,2));
+                Bidnumber=find(Bids(:,2)==bestBid);
+                acNr2 = Bids(Bidnumber(1),1);
 
                 %Form formation
                 step1b_routingSynchronizationFuelSavings;
-                fuelSavingsOffer = Bids(Bidnumber(1),2)*timeAdded_acNr1
-                divisionFutureSavings=Bids(Bidnumber(1),3)
+                fuelSavingsOffer = Bids(Bidnumber(1),2)*timeAdded_acNr1;
+                divisionFutureSavings=Bids(Bidnumber(1),3);
                 step1c_updateProperties;
             end
         end
