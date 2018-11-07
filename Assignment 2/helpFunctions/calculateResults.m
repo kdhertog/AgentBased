@@ -1,7 +1,10 @@
 function [fuelSavingsTotalPct,fuelSavingsAlliancePct, ...
-    fuelSavingsNonAlliancePct,extraDistancePct,extraFlightTimePct] = ...
+    fuelSavingsNonAlliancePct,extraDistancePct,extraFlightTimePct, ...
+    numberOfFormations,delayLeftNonAlliance, delayLeftAlliance, ...
+    fuelSaveDelayRatio, fuelSaveDelayRatioAlliance, fuelSaveAlliance, ...
+    fuelSaveNonAlliance] = ...
     calculateResults(nAircraft,flightsDataRecordings,Wfinal,Vmax, ...
-    fuelSavingsTotal)
+    fuelSavingsTotal, flightsData, percentageAlliance)
 %% calculateResults.m description
 % This function determines the realized fuel savings, the extra flight time
 % due to formation flying, and the extra distance flown due to formation
@@ -31,7 +34,20 @@ function [fuelSavingsTotalPct,fuelSavingsAlliancePct, ...
 % flown),
 % extraFlightTimePct (percentual change in total flight, comparing the
 % actual flight time to the total flight time of only solo flights were
-% flown).
+% flown),
+% numberOfFormations The number of formations that were created in the
+% simulation loop,
+% delayLeftNonAllaince the total allowed delay left for non allaince
+% flights,
+% delayLeftAllaince the total allowed delay left for allaince flights,
+% fuelSaveDelayRatio fuel saved devided by the total delay,
+% fuelSaveDelayRatioAlliance Fuel saved debvided by the allaince devided 
+% by the total delay of the alliance,
+% fuelSaveAllaince Total fuel saved by the Alliance,
+% fuelSaveNonAlliancePerRun Total fuel saved by the non Alliance flights.
+
+
+
 
 % special cases: 
 % -
@@ -191,4 +207,37 @@ fuelSavingsAlliancePct = sum(fuelSavingsPerFlight(FDR(end,1:nAircraft,25)==2))/ 
 % flights.
 fuelSavingsNonAlliancePct = sum(fuelSavingsPerFlight(FDR(end,1:nAircraft,25)==1))/ ...
     fuelSavingsTotal*100;
+
+
+%The number of fomrations that were created in the simulation loop
+numberOfFormations = 2*nAircraft-length(find(flightsData(:,1)==-1));
+
+%The total allowed delay left for non alliance flights. First a list is
+%created with all the flight ID of non alliance lfights. Afterwards the
+%delay is summer for all those flights. 
+nonAllianceID=find(flightsData(:,25)==1);
+delayLeftNonAlliance =sum(flightsData(nonAllianceID,26));
+
+%The total allowed delay left for alliance flights. First a list is
+%created with all the flight ID of alliance lfights. Afterwards the
+%delay is summer for all those flights. 
+AllianceID=find(flightsData(:,25)==2);
+delayLeftAlliance =sum(flightsData(AllianceID,26));
+
+%Fuel saved devided by the total delay
+fuelSaveDelayRatio = fuelSavingsTotal/(sum(formationFlightTimeSeconds) - ...
+    sum(soloFlightTimeSeconds));
+
+%Total fuel saved by the Alliance
+fuelSaveAlliance = sum(fuelSavingsPerFlight(FDR(end,1:nAircraft,25)==2))/(nAircraft*percentageAlliance/100);
+
+%Total fuel saved by the non Alliance flights
+fuelSaveNonAlliance = sum(fuelSavingsPerFlight(FDR(end,1:nAircraft,25)==1))/(nAircraft*(1-percentageAlliance/100)); 
+
+%Fuel saved debvided by the allaince devided by the total delay of the
+%alliance
+fuelSaveDelayRatioAlliance = sum(fuelSavingsPerFlight(FDR(end, ...
+    1:nAircraft,25)==2))/(sum(formationFlightTimeSeconds(AllianceID))- ...
+    sum(soloFlightTimeSeconds(AllianceID))) ;
+
 end
