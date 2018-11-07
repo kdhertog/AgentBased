@@ -40,11 +40,11 @@
     
     %A penalty is needed in reward is needed if a alliance member bids as a
     %contractor on a non-allaince manager
-    noAlliancePenatly=0.6;
+    noAlliancePenalty=0.6;
     
     %The percentage of the best solution at which the agent will decided
     %tom make in bid in the current round
-    bidratio=0.9;
+    bidratio=0.8;
     
     %Fuel save over delay  for alliance flights when they only want to
     %fly together with alliance partners
@@ -52,7 +52,7 @@
     
     %Fuel save over delay for any combination between allaince flights and
     %non-allaince flights. This is ratio is also used for all contractors
-    FuelRatioNonAlliance=9;
+    FuelRatioNonAlliance=10;
     
     %Create an array with each aircraft and how many possible communication
     %partners there are for each aircraft. The one with most possible
@@ -171,7 +171,7 @@ for i = 1:length(communicationCandidates(:,1))
                             FuelDelayRatio=potentialFuelSavings/ ...
                                 (timeAdded_acNr1+timeAdded_acNr2);
                             devision=timeAdded_acNr1/(timeAdded_acNr1+timeAdded_acNr2)*...
-                                noAlliancePenatly;
+                                noAlliancePenalty;
                             if FuelDelayRatio*(1-devision)>flightsData(acNr2,30)
                                flightsData(acNr2,30)= FuelDelayRatio*(1-devision);
                             end
