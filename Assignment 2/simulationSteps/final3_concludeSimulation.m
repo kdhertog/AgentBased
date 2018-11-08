@@ -61,7 +61,7 @@ fuelSaveDelayRatioPerRun(simrun) = fuelSaveDelayRatio;
 fuelSaveDelayRatioAlliancePerRun(simrun) = fuelSaveDelayRatioAlliance;
 
 %Total fuel saved by the Alliance
-fuelSaveAlliancePerRun(simrun) = fuelSaveAlliance
+fuelSaveAlliancePerRun(simrun) = fuelSaveAlliance;
 
 %Total fuel saved by the non Alliance flights
 fuelSaveNonAlliancePerRun(simrun) = fuelSaveNonAlliance;

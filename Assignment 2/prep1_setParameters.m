@@ -7,7 +7,7 @@
 %% Parameters.
 
 % Number of simulation runs.
-nSimulations = 200; 
+nSimulations = 20; 
 
 % Value of the maximum communication distance BETWEEN two aircraft [km]. 
 communicationRange = 500;                                             
