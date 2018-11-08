@@ -102,7 +102,87 @@ for i = 1:length(communicationCandidates(:,1))
         %Determine whether an auction has to take place
         nBidders = length(bidders) - 1;
         if nBidders > 1
-            
+            % Chek if there are two allaince members in the auction for
+            % coordination. 
+            AllianceCoordination=[];
+            if coordination==1 && nBidders>2
+                alliancePartners=[];
+                for j = 1:nBidders
+                    acNr2 = bidders(j+1);
+                    IndexacNr2 = find(bidders==acNr2);
+                    %Determine if acNr2 & acNr1 are still available for
+                    %communication BUG FIX FROM BS FORUM (%if
+                    %flightsData(acNr2,2) == 1 && flightsData(acNr1,2) == 1)
+                    if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1 && ...
+                    (flightsData(acNr1,14) ~= flightsData(acNr2,14) &&  flightsData(acNr1,15) ~= flightsData(acNr2,15))
+
+                        %Determine if the formation leader of acNr2 is part of the allaince or not
+                        %This is checked by looking at all aircraft with the
+                        %same coordinates.
+                        if flightsData(acNr2,21) == 2          
+                            AircrafInFormation=find(flightsData(1:nAircraft,8)== ...
+                                flightsData(acNr2,8) & ...
+                            flightsData(1:nAircraft,14)==flightsData(acNr2,14) & ...
+                            flightsData(1:nAircraft,15)==flightsData(acNr2,15) & ...
+                            flightsData(1:nAircraft,16)==flightsData(acNr2,16));
+                            acLeader=min(AircrafInFormation);
+                            AllianceacNr2=flightsData(acLeader,25);
+                        else
+                            AllianceacNr2=flightsData(acNr2,25);
+                        end
+                        %if the aircraft is part of the allaince they get
+                        %added to the list
+                        if AllianceacNr2==2
+                            alliancePartners=[alliancePartners, acNr2];
+                        end
+                    end
+                end
+                % If coordination is applied and there are more than two
+                % alliancepartners participating in the bidding process
+                % they are also checking all the possible internal
+                % combination. 
+                if coordination==1 && length(alliancePartners(:))>1
+                    acNr1Original=acNr1;
+                    for Coordination1= 1:length(alliancePartners)-1
+                        acNr1=alliancePartners(Coordination1);
+                        for Coordination2= Coordination1+1:length(alliancePartners)
+                            acNr2=alliancePartners(Coordination2);
+                            step1b_routingSynchronizationFuelSavings
+                            % If two aircraft can have a positive fuel
+                            % saving this gets added to the list
+                            % allaincecoordination. in the list each
+                            % aircraft with a positive potential fuel
+                            % saving is listen together with their ac
+                            % number. 
+                            if potentialFuelSavings>0
+                                if ~isempty(AllianceCoordination)
+                                    acNr1index=find(AllianceCoordination(:,1)==acNr1);
+                                    acNr2index=find(AllianceCoordination(:,1)==acNr2);
+                                else 
+                                    acNr1index=[];
+                                    acNr2index=[];
+                                end
+                                if isempty(acNr1index)
+                                    AllianceCoordination=[AllianceCoordination; ...
+                                    acNr1 0.5*potentialFuelSavings];
+                                elseif AllianceCoordination(acNr1index,2)<0.75*potentialFuelSavings
+                                    AllianceCoordination(acNr1index,2)= ...
+                                        0.5*potentialFuelSavings; 
+                                end
+                                if isempty(acNr2index)
+                                    AllianceCoordination=[AllianceCoordination; ...
+                                    acNr2 0.5*potentialFuelSavings];
+                                elseif AllianceCoordination(acNr2index,2)<0.75*potentialFuelSavings
+                                    AllianceCoordination(acNr2index,2) = ...
+                                       0.5*potentialFuelSavings; 
+                                end
+                            end
+                        end
+                    end
+                    %Restore the value of the acNr1 to the auctioneer
+                    acNr1=acNr1Original;
+                end
+            end
             %Start the auction
             auction = 1;
       
@@ -111,6 +191,7 @@ for i = 1:length(communicationCandidates(:,1))
                 %Set up lists for bookkeeping
                 BiddersToBeRemoved = []; %Bidders that do not want to bid anymore
                 alliancePotentialFuelSavings = []; %potential fuel savings of alliance members
+                
                 
                 %Loop over all bidders j 
                 for j = 1:nBidders
@@ -172,12 +253,30 @@ for i = 1:length(communicationCandidates(:,1))
                                 end
 
                                 %Determine devision required to make the bid
-                                devision = currentBidHeight / potentialFuelSavings;
+                                devision = currentBidHeight / (potentialFuelSavings+1e-8);
 
                                 %Either bid, or, if this is not possible, quit
                                 %the auction
                                 bidValue = devision;
-                                if bidValue <= privateValue
+                                
+                                %Check if the airvcraft has other
+                                %possibilities to cooperate with other
+                                %allaince members
+                                if ~isempty(AllianceCoordination)
+                                    acNr2CoordinationIndex=find(AllianceCoordination(:,1)==acNr2);
+                                else 
+                                    acNr2CoordinationIndex=[];
+                                end
+                                %If the aircraft can get a higher fuel
+                                %saving with other agent, the agent stops
+                                %bidding
+                                if coordination==1 && ~isempty(acNr2CoordinationIndex) && ...
+                                      (1-bidValue)*potentialFuelSavings < ...
+                                      AllianceCoordination(acNr2CoordinationIndex,2)   
+                                        test="Coordination applied";
+                                      BiddersToBeRemoved = [BiddersToBeRemoved,IndexacNr2];  
+                                
+                                elseif bidValue <= privateValue
                                     test = "BID";
                                     %add bid to Bids
                                     Bids = [Bids;acNr2,potentialFuelSavings*devision ...
@@ -208,7 +307,9 @@ for i = 1:length(communicationCandidates(:,1))
                 %potential for fuel saving will keep bidding
                 if coordination == 1 && isempty(alliancePotentialFuelSavings) == 0
                     maxAlliance = max(alliancePotentialFuelSavings(:,2));
-                    BiddersToBeRemoved = [BiddersToBeRemoved,alliancePotentialFuelSavings(alliancePotentialFuelSavings(:,1) ~= maxAlliance)]; %#ok<AGROW>
+                    BiddersToBeRemoved = [BiddersToBeRemoved, ...
+                        alliancePotentialFuelSavings(alliancePotentialFuelSavings(:,1) ...
+                        ~= maxAlliance)]; %#ok<AGROW>
                 end
                 
                 %Remove bidders from the bidder list

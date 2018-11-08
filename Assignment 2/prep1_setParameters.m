@@ -23,10 +23,10 @@ dt = 300;
 
 % Negotiation technique (1: greedy algorithm, 2: CNP, 3: Dutch, 4: English,
 % 5: Vickrey, 6: Japanese, 7: first-price sealed-bid).
-negotiationTechnique = 2; 
+negotiationTechnique = 4; 
 
 % Visualize the results (0: no visualization, 1: visualization).
-visualizationOption = 0;
+visualizationOption = 1;
 
 % Fix the seed of the random number generator (RNG). If fixed, the same
 % random flight schedules ('nSimulations' schedules in total) will be
@@ -35,4 +35,4 @@ visualizationOption = 0;
 booleanFixSeedRng = 1;  
 
 % Coordination among alliance partners
-coordination = 0;
+coordination = 1;
