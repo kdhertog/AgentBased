@@ -23,7 +23,7 @@ dt = 300;
 
 % Negotiation technique (1: greedy algorithm, 2: CNP, 3: Dutch, 4: English,
 % 5: Vickrey, 6: Japanese, 7: first-price sealed-bid).
-negotiationTechnique = 4; 
+negotiationTechnique = 7; 
 
 % Visualize the results (0: no visualization, 1: visualization).
 visualizationOption = 1;
@@ -32,7 +32,7 @@ visualizationOption = 1;
 % random flight schedules ('nSimulations' schedules in total) will be
 % generated every time. (0: do not fix seed, different random flight
 % schedules, 1: fix seed).
-booleanFixSeedRng = 1;  
+booleanFixSeedRng = 0;  
 
 % Coordination among alliance partners
 coordination = 1;
