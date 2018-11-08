@@ -53,7 +53,7 @@ FuelRatioAlliance=175;
 %Fuel save over delay for any combination between allaince flights and
 %non-allaince flights. This is ratio is also used for all contractors
 FuelRatioNonAlliance=78.75;
-
+ 
 %Create an array with each aircraft and how many possible communication
 %partners there are for each aircraft. The one with most possible
 %connection is selected as first for manager. 
