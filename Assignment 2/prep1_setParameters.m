@@ -32,7 +32,7 @@ visualizationOption = 0;
 % random flight schedules ('nSimulations' schedules in total) will be
 % generated every time. (0: do not fix seed, different random flight
 % schedules, 1: fix seed).
-booleanFixSeedRng = 0;  
+booleanFixSeedRng = 1;  
 
 % Coordination among alliance partners
 coordination = 0;

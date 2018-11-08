@@ -34,13 +34,15 @@
 
 %% Loop through the combinations of flights that are allowed to communicate.
 
-fuelSaveDelayRatioRequired = 30;
+%Minimum fuel savings for both the auctioneer and the bidder
+fuelSaveRequired = 100;
 
+%Factor to lower the private value of an alliance bidder in case of a
+%non-alliance auctioneer
 factorNonAllianceAuctioneer = 0.8;
 
-coordination = 1;
-
-bidList = [];
+%Starting bid height of the auction
+initialBidHeight = 5000;
 
 %Create an array with each aircraft and how many possible communication
 %partners there are for each aircraft. The one with most possible
@@ -51,6 +53,7 @@ for i = 1:length(communicationCandidates(:,1))
 end
 Auctioneerorder=sortrows(NumberofCandidates,2,'descend');
 
+%Loop over all potential auctioneers
 for i = 1:length(communicationCandidates(:,1))     
     % Store flight ID of flight i in variable.
     acNr1 = Auctioneerorder(i,1);     
@@ -59,9 +62,9 @@ for i = 1:length(communicationCandidates(:,1))
     nCandidates = Auctioneerorder(i,2); 
     
     %Bids for each auction are stored in the following list. The first
-    %entry is the flight ID, second is the fuel saved over delay mutiplied 
-    %times the division. Third is the devision ratio for acNr1 w.r.t. the 
-    %total earnings. The forth parameter determines if the bid comes from 
+    %entry is the flight ID, second is the potential fuel savings mutiplied 
+    %by the division. Third is the devision ratio for acNr1 w.r.t. the 
+    %total earnings. The fourth parameter determines if the bid comes from 
     %the alliance or not.
     Bids=[];
     
@@ -105,16 +108,20 @@ for i = 1:length(communicationCandidates(:,1))
         if nBidders > 1
             
             %Start the auction
-            bidHeight = 5000;
+            bidHeight = initialBidHeight;
+            non_alliance = 0; %if there are any non-alliance bidders
             
-            while bidHeight > 0
+            while bidHeight > fuelSaveRequired-10
                 
-                if nBidders < 2
+                if nBidders < 1
+                    test = "BREAK";
                     break
                 end
                 
-                BiddersToBeRemoved = [];
-                
+                %Set up list for bookkeeping
+                BiddersToBeRemoved = []; %Bidders that do not want to bid anymore
+                alliancePotentialFuelSavings = []; %potential fuel savings of alliance members
+                %Loop over all bidders
                 for j = 1:nBidders
                     acNr2 = bidders(j+1);
                     IndexacNr2 = find(bidders==acNr2);
@@ -124,7 +131,6 @@ for i = 1:length(communicationCandidates(:,1))
                     %flightsData(acNr2,2) == 1 && flightsData(acNr1,2) == 1)
                     if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1 && ...
                     (flightsData(acNr1,14) ~= flightsData(acNr2,14) &&  flightsData(acNr1,15) ~= flightsData(acNr2,15))
-                        %test = "Communicate"
 
                         %Determine if the formation leader of acNr2 is part of the allaince or not
                         %This is checked by looking at all aircraft with the
@@ -142,37 +148,47 @@ for i = 1:length(communicationCandidates(:,1))
                         end 
 
                         step1b_routingSynchronizationFuelSavings
-
+                        
+                        %If the bidder is alliance we want to store the
+                        %fuel savings, to enable coordination
+                        if AllianceacNr2 == 2  
+                            test = "ALLIANCE";
+                            alliancePotentialFuelSavings = [alliancePotentialFuelSavings, [IndexacNr2, potentialFuelSavings]]; %#ok<AGROW>
+                        elseif AllianceacNr2 == 1 
+                            non_alliance = 1;
+                        end
+                        
                         %Determine to bid or not. If there is a potential for
                         %FuelSavings, the agent wants to bid. 
                         bidDecisionFactor = potentialFuelSavings;
                         bidTreshold = 0; %bidDecision factor should be bigger than this
-
                         if bidDecisionFactor > bidTreshold
-
-                                FuelDelayRatio = potentialFuelSavings/ ...
-                                    (timeAdded_acNr1+timeAdded_acNr2);
-
+                                
                                 %determine private value
                                 if AllianceacNr1 == 2 && AllianceacNr2 == 2 %Both are in the alliance, so they want to work together no matter what
                                     privateValue = 1.0;
+                                    test = "OPTION1";
                                 elseif AllianceacNr1 == 1 && AllianceacNr2 == 2 %Alliance bidder has a lower willingness to work with non alliance 
-                                    privateValue = (1 - (fuelSaveDelayRatioRequired / (potentialFuelSavings/timeAdded_acNr2))) * factorNonAllianceAuctioneer;
+                                    privateValue = (1 - fuelSaveRequired / potentialFuelSavings) * factorNonAllianceAuctioneer;
+                                    test = "OPTION2";
                                 else
-                                    privateValue = 1 - (fuelSaveDelayRatioRequired / (potentialFuelSavings/timeAdded_acNr2));
+                                    privateValue = 1 - fuelSaveRequired / potentialFuelSavings;
+                                    test = "OPTION4";
                                 end
                                 
                                 %Determine devision required to make the bid
-                                devision = bidHeight / FuelDelayRatio;
+                                devision = bidHeight / potentialFuelSavings;
 
                                 %If the agent can bid he bids
                                 bidValue = devision;
                                 if bidValue <= privateValue
                                     test = "BID";
                                     %add bid to Bids
-                                    fuelSavingsOffer = FuelDelayRatio*devision*timeAdded_acNr1;
-                                    divisionFutureSavings=devision;
+                                    fuelSavingsOffer = potentialFuelSavings*devision;
+                                    divisionFutureSavings = devision;
                                     step1c_updateProperties
+                                    
+                                    %end the auction
                                     bidHeight = -1;
                                     break
                                 end
@@ -190,10 +206,39 @@ for i = 1:length(communicationCandidates(:,1))
                         BiddersToBeRemoved = [BiddersToBeRemoved,IndexacNr2]; %#ok<AGROW>
                     end
                     
-                end   
+                end
+                
+                %When there are only alliance bidders, only the alliance
+                %aircraft with the highest potential fuel savings will
+                %stay. Since this is then the only bidder, the auction will
+                %ends when this agent bids, which will be at the minimum
+                %value. So the auction will end, with the minimum as the
+                %winning bid. 
+                if coordination == 1 && isempty(alliancePotentialFuelSavings) == 0 && non_alliance == 0
+                    test = "Coordination";
+                    maxAlliance = max(alliancePotentialFuelSavings(:,2));
+                    maxAllianceIndex = find(alliancePotentialFuelSavings(:,2)==maxAlliance);
+                    acNr2 = alliancePotentialFuelSavings(maxAllianceIndex(1),1);
+                    
+                    %Check again if the flights are able to communicate
+                    if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1 && ...
+                    (flightsData(acNr1,14) ~= flightsData(acNr2,14) &&  flightsData(acNr1,15) ~= flightsData(acNr2,15))
+                        step1b_routingSynchronizationFuelSavings;
+                        devision = fuelSaveRequired / potentialFuelSavings;
+                        fuelSavingsOffer = potentialFuelSavings*devision;
+                        divisionFutureSavings = devision;
+                        step1c_updateProperties
+                      
+                        %end the auction
+                        bidHeight = -1000;
+                        break
+                    end
+                    
+                end
+                
                 %Remove bidders from the bidder list
                 bidders(BiddersToBeRemoved) = [];
-                nBidders = length(bidders)-length(BiddersToBeRemoved)-1;
+                nBidders = length(bidders)-1;
                 
                 %Lower bid height
                 bidHeight = bidHeight * 0.95;

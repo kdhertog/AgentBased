@@ -33,8 +33,11 @@
 
 %% Loop through the combinations of flights that are allowed to communicate.
 
-fuelSaveDelayRatioRequired = 30;
+%Minimum fuel savings for both the auctioneer and the bidder
+fuelSaveRequired = 100;
 
+%Factor to lower the private value of an alliance bidder in case of a
+%non-alliance auctioneer
 factorNonAllianceAuctioneer = 0.8;
 
 %Create an array with each aircraft and how many possible communication
@@ -46,6 +49,7 @@ for i = 1:length(communicationCandidates(:,1))
 end
 Auctioneerorder=sortrows(NumberofCandidates,2,'descend');
 
+%Loop over all potential auctioneers
 for i = 1:length(communicationCandidates(:,1))     
     % Store flight ID of flight i in variable.
     acNr1 = Auctioneerorder(i,1);     
@@ -98,7 +102,9 @@ for i = 1:length(communicationCandidates(:,1))
         nBidders = length(bidders) - 1;
         if nBidders > 1
             
-            %Start the auction
+            alliancePotentialFuelSavings = [];
+            non_alliance = 0; %if there are any non-alliance bidders
+            %Start the auction and loop over the bidders
             for j = 1:nBidders
                 acNr2 = bidders(j+1);
                 IndexacNr2 = find(bidders==acNr2);
@@ -126,7 +132,16 @@ for i = 1:length(communicationCandidates(:,1))
                     end 
 
                     step1b_routingSynchronizationFuelSavings
-
+                    
+                    %If the bidder is alliance we want to store the
+                    %fuel savings, to enable coordination
+                    if AllianceacNr2 == 2  
+                        test = "ALLIANCE";
+                        alliancePotentialFuelSavings = [alliancePotentialFuelSavings, [IndexacNr2, potentialFuelSavings]]; %#ok<AGROW>
+                    elseif AllianceacNr2 == 1 
+                        non_alliance = 1;
+                    end
+                    
                     %Determine to bid or not. If there is a potential for
                     %FuelSavings, the agent wants to bid. 
                     bidDecisionFactor = potentialFuelSavings;
@@ -135,42 +150,76 @@ for i = 1:length(communicationCandidates(:,1))
 
                     if bidDecisionFactor > bidTreshold
 
-                        FuelDelayRatio = potentialFuelSavings/ ...
-                            (timeAdded_acNr1+timeAdded_acNr2);
-
                         %determine private value
                         if AllianceacNr1 == 2 && AllianceacNr2 == 2 %Both are in the alliance, so they want to work together no matter what
                             privateValue = 1.0;
                         elseif AllianceacNr1 == 1 && AllianceacNr2 == 2 %Alliance bidder has a lower willingness to work with non alliance 
-                            privateValue = (1 - (fuelSaveDelayRatioRequired / (potentialFuelSavings/timeAdded_acNr2))) * factorNonAllianceAuctioneer;
+                            privateValue = (1 - fuelSaveRequired / potentialFuelSavings) * factorNonAllianceAuctioneer;
                         else
-                            privateValue = 1 - (fuelSaveDelayRatioRequired / (potentialFuelSavings/timeAdded_acNr2));
+                            privateValue = 1 - fuelSaveRequired / potentialFuelSavings;
                         end
 
                         %Do bid based on private value
                         bidFactor = 0.9;
                         devisionBid = bidFactor * privateValue;
-                        Bids = [Bids;acNr2,FuelDelayRatio*devisionBid ...
+                        Bids = [Bids;acNr2,potentialFuelSavings*devisionBid ...
                                 ,devisionBid,AllianceacNr2]; %#ok<AGROW>
 
                     end
                 end
             end
           
-            %Determine winner (the bid with the highest fuel saved over delay mutiplied 
+            %Determine winner in case no coordination takes place (the bid with the highest fuel saved over delay mutiplied 
             %with the division) (Only if there is a bid, else
             %no formation is formed
-            if isempty(Bids) == 0
+            if isempty(Bids) == 0 && coordination == 0
                 bestBid = max(Bids(:,2));
                 Bidnumber=find(Bids(:,2)==bestBid);
                 acNr2 = Bids(Bidnumber(1),1);
 
                 %Form formation
                 step1b_routingSynchronizationFuelSavings;
-                fuelSavingsOffer = Bids(Bidnumber(1),2)*timeAdded_acNr1;
+                fuelSavingsOffer = Bids(Bidnumber(1),2);
                 divisionFutureSavings=Bids(Bidnumber(1),3);
                 step1c_updateProperties;
             end
+            
+            %Coordination: if there are only alliance bidders, coordination
+            %will take place, else the winner will be determined in the same way as with no coordination.
+            if coordination == 1
+                if isempty(Bids) == 0 && non_alliance == 1
+                    bestBid = max(Bids(:,2));
+                    Bidnumber=find(Bids(:,2)==bestBid);
+                    acNr2 = Bids(Bidnumber(1),1);
+
+                    %Form formation
+                    step1b_routingSynchronizationFuelSavings;
+                    fuelSavingsOffer = Bids(Bidnumber(1),2);
+                    divisionFutureSavings=Bids(Bidnumber(1),3);
+                    step1c_updateProperties;
+                   
+                %Only the alliance bidder with the heighest potential fuel
+                %savings will bid, and that agent will bid the minimum
+                %value, all other agents will not bid, and thus the winning
+                %bid will be the minimum bid for the agent with the
+                %heighest fuel saving potential
+                elseif isempty(alliancePotentialFuelSavings) == 0 && non_alliance == 0
+                    test = "Coordination";
+                    maxAlliance = max(alliancePotentialFuelSavings(:,2));
+                    maxAllianceIndex = find(alliancePotentialFuelSavings(:,2)==maxAlliance);
+                    acNr2 = alliancePotentialFuelSavings(maxAllianceIndex(1),1);
+                    
+                    %Check again if the flights are able to communicate
+                    if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1 && ...
+                    (flightsData(acNr1,14) ~= flightsData(acNr2,14) &&  flightsData(acNr1,15) ~= flightsData(acNr2,15))
+                        step1b_routingSynchronizationFuelSavings;
+                        devision = fuelSaveRequired / potentialFuelSavings;
+                        fuelSavingsOffer = potentialFuelSavings*devision;
+                        divisionFutureSavings = devision;
+                        step1c_updateProperties
+                    end
+                end
+            end 
         end
     end           
 end

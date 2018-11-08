@@ -104,63 +104,64 @@ for multiplier= 1:20
 
     %% Carry out the simulation runs.
     for simrun = 1:nSimulations
-    %% Prepare the (new) simulation run.
+        %% Prepare the (new) simulation run.
 
-    % Remove previously obtained data from the variables.
-    clearvars flightsDataRecordings flightsDataReal flightsData
+        % Remove previously obtained data from the variables.
+        clearvars flightsDataRecordings flightsDataReal flightsData
 
-    % Load the initial flight data.
-    flightsData = squeeze(flightsInitialSchedule(simrun,:,:));
+        % Load the initial flight data.
+        flightsData = squeeze(flightsInitialSchedule(simrun,:,:));
 
-    % Get the initial values into the flight data recorder. This will be
-    % used to visualize the results.
-    flightsDataRecordings(1,:,:) = flightsData;
-    flightsDataReal(1,:,:) = flightsData(1:nAircraft,:);
+        % Get the initial values into the flight data recorder. This will be
+        % used to visualize the results.
+        flightsDataRecordings(1,:,:) = flightsData;
+        flightsDataReal(1,:,:) = flightsData(1:nAircraft,:);
 
-    % Set the time step to 1. This is not a unit of time, but will
-    % be used to record the flight data and visualize the results. The
-    % size of each time step is dt.
-    t = 1;  
+        % Set the time step to 1. This is not a unit of time, but will
+        % be used to record the flight data and visualize the results. The
+        % size of each time step is dt.
+        t = 1;  
 
-    % Predefine number of dummy flights used.
-    dummyCounter = 0;   
-    % Predefine total fuel savings. 
-    fuelSavingsTotal = 0;       
+        % Predefine number of dummy flights used.
+        dummyCounter = 0;   
+        % Predefine total fuel savings. 
+        fuelSavingsTotal = 0;       
 
-    % Visualize the origin and destination airports. 
-    if visualizationOption == 1
-        final1_visualizeAirports;
-    end                 
-
-    %% Current simulation run is carried out here.
-
-    % Runs while not every real flight has arrived yet (excludes dummy
-    % flights).
-    while sum(flightsData(1:nAircraft,18)) < nAircraft                          
-        % Go through the three steps of the simulation.
-        step1_performCommunication;
-        step2_moveAircraft;
-        step3_determineFormationLeaders;
-
-        % Iterate to the next time step.
-        t = t+1;                                                                
-
-        % Store the data in time step t of the flight recorders.
-        flightsDataRecordings(t,:,:) = flightsData;                                    
-        flightsDataReal(t,:,:) = flightsData(1:nAircraft,:); 
-
-        % Visualize the flights. 
+        % Visualize the origin and destination airports. 
         if visualizationOption == 1
-            final2_visualizeFlights;
+            final1_visualizeAirports;
+        end                 
+
+        %% Current simulation run is carried out here.
+
+        % Runs while not every real flight has arrived yet (excludes dummy
+        % flights).
+        while sum(flightsData(1:nAircraft,18)) < nAircraft                          
+            % Go through the three steps of the simulation.
+            step1_performCommunication;
+            step2_moveAircraft;
+            step3_determineFormationLeaders;
+
+            % Iterate to the next time step.
+            t = t+1;                                                                
+
+            % Store the data in time step t of the flight recorders.
+            flightsDataRecordings(t,:,:) = flightsData;                                    
+            flightsDataReal(t,:,:) = flightsData(1:nAircraft,:); 
+
+            % Visualize the flights. 
+            if visualizationOption == 1
+                final2_visualizeFlights;
+            end
         end
+
+        %% Store performance indicators of current simulation run.
+        % Calculate the realized fuel savings, the extra flight time due to
+        % formation flying, and the extra distance flown due to formation
+        % flying.
+        final3_concludeSimulation;
     end
 
-    %% Store performance indicators of current simulation run.
-    % Calculate the realized fuel savings, the extra flight time due to
-    % formation flying, and the extra distance flown due to formation
-    % flying.
-    final3_concludeSimulation;
-    end
 
     % ax1 = subplot(2,2,1);
     % bar(ax1,[fuelSaveAlliancePerRun fuelSaveNonAlliancePerRun])
@@ -170,5 +171,5 @@ for multiplier= 1:20
     % bar(ax3, [fuelSaveDelayRatioAlliancePerRun fuelSaveDelayRatioPerRun])
     % ax4 = subplot(2,2,4);
     % bar(ax4,[fuelSavingsAlliancePctPerRun fuelSavingsNonAlliancePctPerRun])
-    disp([FuelRatioAlliance, mean(fuelSaveAlliancePerRun)]);
+    %disp([FuelRatioAlliance, mean(fuelSaveAlliancePerRun)]);
 end
