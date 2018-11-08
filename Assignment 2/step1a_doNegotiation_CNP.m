@@ -34,34 +34,34 @@
 
 %----Parameters that need to be added-----
 
-    %Constant used for waying if agent i has enough max_delay left to
-    %become a manager. This can be bigger than 0. 
-    managerDelayDecision = 0;
-    
-    %A penalty is needed in reward is needed if a alliance member bids as a
-    %contractor on a non-allaince manager
-    noAlliancePenatly=0.6;
-    
-    %The percentage of the best solution at which the agent will decided
-    %tom make in bid in the current round
-    bidratio=0.9;
-    
-    %Fuel save over delay  for alliance flights when they only want to
-    %fly together with alliance partners
-    FuelRatioAlliance=25;
-    
-    %Fuel save over delay for any combination between allaince flights and
-    %non-allaince flights. This is ratio is also used for all contractors
-    FuelRatioNonAlliance=9;
-    
-    %Create an array with each aircraft and how many possible communication
-    %partners there are for each aircraft. The one with most possible
-    %connection is selected as first for manager. 
-    NumberofCandidates=[];
-    for i = 1:length(communicationCandidates(:,1)) 
-        NumberofCandidates=[NumberofCandidates;communicationCandidates(i,1),nnz(communicationCandidates(i,2:end))];
-    end
-    Managerorder=sortrows(NumberofCandidates,2,'descend');
+%Constant used for waying if agent i has enough max_delay left to
+%become a manager. This can be bigger than 0. 
+managerDelayDecision = 0;
+
+%A penalty is needed in reward is needed if a alliance member bids as a
+%contractor on a non-allaince manager
+noAlliancePenalty=0.6;
+
+%The percentage of the best solution at which the agent will decided
+%tom make in bid in the current round
+bidratio=0.8;
+
+%Fuel save over delay  for alliance flights when they only want to
+%fly together with alliance partners
+FuelRatioAlliance=25*multiplier;
+
+%Fuel save over delay for any combination between allaince flights and
+%non-allaince flights. This is ratio is also used for all contractors
+FuelRatioNonAlliance=10*multiplier;
+
+%Create an array with each aircraft and how many possible communication
+%partners there are for each aircraft. The one with most possible
+%connection is selected as first for manager. 
+NumberofCandidates=[];
+for i = 1:length(communicationCandidates(:,1)) 
+    NumberofCandidates=[NumberofCandidates;communicationCandidates(i,1),nnz(communicationCandidates(i,2:end))];
+end
+Managerorder=sortrows(NumberofCandidates,2,'descend');
     
 
 for i = 1:length(communicationCandidates(:,1))     
@@ -105,8 +105,9 @@ for i = 1:length(communicationCandidates(:,1))
             AllianceacNr1=flightsData(acNr1,25);
         end 
         
-        if AllianceacNr1==2 && coordination==1
+        if coordination==1
             AlliancePartners=[];
+            NonAlliancePartners=[];
         end
         %Find the index acNr1 in the list of communicationCandidates
         IndexacNr1=find(communicationCandidates(:,1)==acNr1);
@@ -133,14 +134,17 @@ for i = 1:length(communicationCandidates(:,1))
                 end 
                 
                
-                if AllianceacNr2==2 && AllianceacNr1==2 && coordination==1
+                if AllianceacNr2==2 && coordination==1
                     AlliancePartners=[AlliancePartners, acNr2];
+                elseif coordination==1 
+                    NonAlliancePartners=[NonAlliancePartners, acNr2];
                 end 
+                              
                 
                 % If the manager is not part of the allaince the bid of the
                 % contractor depends on the fact if it is part of the
                 % alliance or not. 
-                if AllianceacNr1==1                    
+                if AllianceacNr1==1                   
                     step1b_routingSynchronizationFuelSavings
                     if potentialFuelSavings > 0
                         %If the manager is part not part of the allaince,
@@ -171,7 +175,7 @@ for i = 1:length(communicationCandidates(:,1))
                             FuelDelayRatio=potentialFuelSavings/ ...
                                 (timeAdded_acNr1+timeAdded_acNr2);
                             devision=timeAdded_acNr1/(timeAdded_acNr1+timeAdded_acNr2)*...
-                                noAlliancePenatly;
+                                noAlliancePenalty;
                             if FuelDelayRatio*(1-devision)>flightsData(acNr2,30)
                                flightsData(acNr2,30)= FuelDelayRatio*(1-devision);
                             end
@@ -209,6 +213,59 @@ for i = 1:length(communicationCandidates(:,1))
                 end
             end
         end
+        
+        if AllianceacNr1==1 && coordination==1 && ...
+                length(AlliancePartners)>=2 && isempty(Bids)==0
+            acNr1Original=acNr1;
+            AllianceCoordination=[];
+            for Coordination1= 1:length(AlliancePartners)-1
+                acNr1=AlliancePartners(Coordination1);
+                for Coordination2= Coordination1+1:length(AlliancePartners)
+                    acNr2=AlliancePartners(Coordination2);
+                    step1b_routingSynchronizationFuelSavings
+                    if potentialFuelSavings>0
+                        FuelDelayRatio=potentialFuelSavings/ ...
+                            (timeAdded_acNr1+timeAdded_acNr2);
+                        acNr1Bid=find(Bids(:,1)==acNr1);
+                        acNr2Bid=find(Bids(:,1)==acNr2);
+                        if isempty(acNr1Bid)==0
+                            fuelSaveRatioBid=Bids(acNr1Bid,2)/Bids(acNr1Bid,3) ...
+                                *(1-Bids(acNr1Bid,3));
+                            fuelSaveRatioAlliance=FuelDelayRatio*timeAdded_acNr1 / ...
+                                (timeAdded_acNr1+timeAdded_acNr2);
+                            if fuelSaveRatioAlliance>fuelSaveRatioBid
+                                Bids(acNr1Bid,2)=0;
+                                disp("Bid deleted")
+                            end
+                        end
+                        
+                        if isempty(acNr2Bid)==0
+                            fuelSaveRatioBid=Bids(acNr2Bid,2)/Bids(acNr2Bid,3) ...
+                                *(1-Bids(acNr2Bid,3));
+                            fuelSaveRatioAlliance=FuelDelayRatio*timeAdded_acNr2 / ...
+                                (timeAdded_acNr1+timeAdded_acNr2);
+                            if fuelSaveRatioAlliance>fuelSaveRatioBid
+                                Bids(acNr2Bid,2)=0;
+                                disp("Bid deleted")
+                            end
+                        end
+                    end
+                end
+            end
+            acNr1=acNr1Original;
+        end
+        
+        if coordination==1 && isempty(NonAlliancePartners) && ...
+                ~isempty(Bids)
+            BestBid=find(Bids(:,2)==max(Bids(:,2)));
+            BestBid=BestBid(1);
+            if Bids(BestBid,2)>FuelRatioNonAlliance
+                FuelDelayRatio=Bids(BestBid,2)/Bids(BestBid,3);
+                Devision=(FuelRatioNonAlliance+0.01)/FuelDelayRatio;
+                Bids=[Bids(BestBid,1) (FuelRatioNonAlliance+0.01) Devision Bids(BestBid,4)];
+            end
+        end
+        
 
         if  isempty(Bids)==0
             %Find the best bid that the contractor received in terms of
@@ -223,17 +280,16 @@ for i = 1:length(communicationCandidates(:,1))
                 if coordination==1 && length(AlliancePartners)>=2
                     acNr1Original=acNr1;
                     AllianceCoordination=[];
-                    for i= 1:length(AlliancePartners)-1
-                        
-                        acNr1=AlliancePartners(i);
-                        for j= i+1:length(AlliancePartners)
-                            acNr2=AlliancePartners(j);
+                    for Coordination1= 1:length(AlliancePartners)-1
+                        acNr1=AlliancePartners(Coordination1);
+                        for Coordination2= Coordination1+1:length(AlliancePartners)
+                            acNr2=AlliancePartners(Coordination2);
                             step1b_routingSynchronizationFuelSavings
                             if potentialFuelSavings>0
                                 FuelDelayRatio=potentialFuelSavings/ ...
                                     (timeAdded_acNr1+timeAdded_acNr2);
                                 AllianceCoordination=[AllianceCoordination; ...
-                                    acNr1 acNr2 FuelDelayRatio]
+                                    acNr1 acNr2 FuelDelayRatio];
                             end
                         end
                     end
@@ -251,7 +307,6 @@ for i = 1:length(communicationCandidates(:,1))
                     BestCoordination=0;
                 end
                 
-                
                 %Create a list with all the elements that come from the
                 %allaince
                 AllianceBids=Bids(Bids(:,4)==2,:);
@@ -263,18 +318,22 @@ for i = 1:length(communicationCandidates(:,1))
                 if coordination==1 &&~isempty(AllianceBids) && ...
                         BestCoordination>2*AllianceBids(BidnumberAlliance(1),2) ...
                         && BestCoordination>2*FuelRatioAlliance
+                    disp("Coordination 1 applied")
                     acNr1=AllianceacNr1;
                     acNr2=AllianceacNr2;
                     step1b_routingSynchronizationFuelSavings;
-                    fuelSavingsOffer = timeAdded_acNr1 / (timeAdded_acNr1+ ...
-                        timeAdded_acNr2);
-                    divisionFutureSavings=fuelSavingsOffer;
+                    fuelSavingsOffer = potentialFuelSavings* ...
+                        timeAdded_acNr1 / (timeAdded_acNr1+ ...
+                        timeAdded_acNr2+1e-8);
+                    divisionFutureSavings=timeAdded_acNr1 / ...
+                        (timeAdded_acNr1+ timeAdded_acNr2+1e-8);
                     step1c_updateProperties
                 elseif ~isempty(AllianceBids) && ...
                         AllianceBids(BidnumberAlliance(1),2)>FuelRatioAlliance
                     acNr2=AllianceBids(BidnumberAlliance(1),1);
                     step1b_routingSynchronizationFuelSavings;
-                    fuelSavingsOffer = AllianceBids(BidnumberAlliance(1),3);
+                    fuelSavingsOffer = potentialFuelSavings*...
+                        AllianceBids(BidnumberAlliance(1),3);
                     divisionFutureSavings=AllianceBids(BidnumberAlliance(1),3);
                     step1c_updateProperties
                 else
@@ -284,18 +343,22 @@ for i = 1:length(communicationCandidates(:,1))
                     if coordination==1 && BestCoordination > ...
                             2*Bids(Bidnumber(1),2) && BestCoordination > ...
                             2*FuelRatioNonAlliance
+                        disp("Coordination 2 applied")
                         acNr1=AllianceacNr1;
                         acNr2=AllianceacNr2;
                         step1b_routingSynchronizationFuelSavings;
-                        fuelSavingsOffer = timeAdded_acNr1 / (timeAdded_acNr1+ ...
-                            timeAdded_acNr2);
-                        divisionFutureSavings=fuelSavingsOffer;
+                        fuelSavingsOffer = potentialFuelSavings* ...
+                            timeAdded_acNr1 / (timeAdded_acNr1+ ...
+                            timeAdded_acNr2+1e-8);
+                        divisionFutureSavings=timeAdded_acNr1 / ...
+                            (timeAdded_acNr1+ timeAdded_acNr2+1e-8);
                         step1c_updateProperties
                         
                     elseif Bids(Bidnumber(1),2)>FuelRatioNonAlliance
                         acNr2=Bids(Bidnumber(1),1);
                         step1b_routingSynchronizationFuelSavings;
-                        fuelSavingsOffer = Bids(Bidnumber(1),3);
+                        fuelSavingsOffer = potentialFuelSavings*...
+                            Bids(Bidnumber(1),3);
                         divisionFutureSavings=Bids(Bidnumber(1),3);
                         step1c_updateProperties
                     end
@@ -308,7 +371,8 @@ for i = 1:length(communicationCandidates(:,1))
                 if Bids(Bidnumber(1),2)>FuelRatioNonAlliance
                     acNr2=Bids(Bidnumber(1),1);
                     step1b_routingSynchronizationFuelSavings;
-                    fuelSavingsOffer = Bids(Bidnumber(1),3);
+                    fuelSavingsOffer = potentialFuelSavings*...
+                    Bids(Bidnumber(1),3);
                     divisionFutureSavings=Bids(Bidnumber(1),3);
                     step1c_updateProperties
                 end
