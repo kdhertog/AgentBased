@@ -51,5 +51,10 @@ fuelSaveAlliancePerRun = zeros(nSimulations,1);
 %Total fuel saved by the non Alliance flights
 fuelSaveNonAlliancePerRun = zeros(nSimulations,1);
 
+%Check the type of coordination that tooks place
+CoordinationCount1PerRun= zeros(nSimulations,1);
+CoordinationCount2PerRun= zeros(nSimulations,1);
+CoordinationCount3PerRun= zeros(nSimulations,1);
+
 
 

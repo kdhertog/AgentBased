@@ -66,6 +66,16 @@ fuelSaveAlliancePerRun(simrun) = fuelSaveAlliance;
 %Total fuel saved by the non Alliance flights
 fuelSaveNonAlliancePerRun(simrun) = fuelSaveNonAlliance;
 
+CoordinationCount1PerRun(simrun)= CoordinationCount1;
+CoordinationCount2PerRun(simrun)= CoordinationCount2;
+CoordinationCount3PerRun(simrun)= CoordinationCount3;
+
+%Set the coordination count values to zero for 
+CoordinationCount1=0;
+CoordinationCount2=0;
+CoordinationCount3=0;
+
+
 %% Clear some variables.
 
 clearvars a acNr1 acNr2 c communicationCandidates divisionFutureSavings ...

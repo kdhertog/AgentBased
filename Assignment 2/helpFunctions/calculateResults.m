@@ -197,16 +197,16 @@ extraFlightTimePct = (sum(formationFlightTimeSeconds) - ...
 
 % Percentual change in fuel use, comparing the actual fuel use to
 % the total fuel use if of only solo flights were flown.
-fuelSavingsTotalPct = fuelSavingsTotal/sum(soloFuelRequired)*100
+fuelSavingsTotalPct = fuelSavingsTotal/sum(soloFuelRequired)*100;
 
 % Percentage of the total fuel savings that went to the alliance.
 fuelSavingsAlliancePct = sum(fuelSavingsPerFlight(FDR(end,1:nAircraft,25)==2))/ ...
-    fuelSavingsTotal*100
+    fuelSavingsTotal*100;
 
 % Percentage of the total fuel savings that went to the non-alliance
 % flights.
 fuelSavingsNonAlliancePct = sum(fuelSavingsPerFlight(FDR(end,1:nAircraft,25)==1))/ ...
-    fuelSavingsTotal*100
+    fuelSavingsTotal*100;
 
 
 %The number of fomrations that were created in the simulation loop
