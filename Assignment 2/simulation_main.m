@@ -168,5 +168,5 @@ end
 % bar(ax3, [fuelSaveDelayRatioAlliancePerRun fuelSaveDelayRatioPerRun])
 % ax4 = subplot(2,2,4);
 % bar(ax4,[fuelSavingsAlliancePctPerRun fuelSavingsNonAlliancePctPerRun])
-disp([FuelRatioAlliance, mean(fuelSaveAlliancePerRun)]);
-FuelRatioAlliance=FuelRatioAlliance+5;
+%disp([FuelRatioAlliance, mean(fuelSaveAlliancePerRun)]);
+%FuelRatioAlliance=FuelRatioAlliance+5;

@@ -38,6 +38,8 @@ fuelSaveDelayRatioRequired = 30;
 
 factorNonAllianceAuctioneer = 0.8;
 
+coordination = 1;
+
 %Create an array with each aircraft and how many possible communication
 %partners there are for each aircraft. The one with most possible
 %connection is selected as first for auctioneer. 
@@ -127,7 +129,7 @@ for i = 1:length(communicationCandidates(:,1))
                     end 
 
                     step1b_routingSynchronizationFuelSavings
-
+                    
                     %Determine to bid or not. If there is a potential for
                     %FuelSavings, the agent wants to bid. 
                     bidDecisionFactor = potentialFuelSavings;
