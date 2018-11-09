@@ -53,6 +53,11 @@ maxInitialDelay = 45;
 flightsPerAirportAmericas = 5.9;
 flightsPerAirportEuro = 8.7;
 
+%Set Coordination value to zero at start of the simulation
+CoordinationCount1=0;
+CoordinationCount2=0;
+CoordinationCount3=0;
+
 % Check whether to fix the seed of the random number generator (RNG).
 if booleanFixSeedRng == 1  
     % Set the seed for the RNG.

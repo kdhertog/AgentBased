@@ -162,13 +162,13 @@ for simrun = 1:nSimulations
 end
 
 
-% ax1 = subplot(2,2,1);
-% bar(ax1,[fuelSaveAlliancePerRun fuelSaveNonAlliancePerRun])
-% ax2 = subplot(2,2,2);
-% bar(ax2, [delayLeftAllaincePerRun delayLeftNonAlliancePerRun])
-% ax3 = subplot(2,2,3);
-% bar(ax3, [fuelSaveDelayRatioAlliancePerRun fuelSaveDelayRatioPerRun])
-% ax4 = subplot(2,2,4);
-% bar(ax4,[fuelSavingsAlliancePctPerRun fuelSavingsNonAlliancePctPerRun])
+ax1 = subplot(2,2,1);
+bar(ax1,[fuelSaveAlliancePerRun fuelSaveNonAlliancePerRun])
+ax2 = subplot(2,2,2);
+bar(ax2, [delayLeftAllaincePerRun delayLeftNonAlliancePerRun])
+ax3 = subplot(2,2,3);
+bar(ax3, [fuelSaveDelayRatioAlliancePerRun fuelSaveDelayRatioPerRun])
+ax4 = subplot(2,2,4);
+bar(ax4,[fuelSavingsAlliancePctPerRun fuelSavingsNonAlliancePctPerRun])
 %disp([FuelRatioAlliance, mean(fuelSaveAlliancePerRun)]);
 

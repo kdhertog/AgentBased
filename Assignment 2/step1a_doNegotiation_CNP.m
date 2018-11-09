@@ -235,7 +235,8 @@ for i = 1:length(communicationCandidates(:,1))
                                 (timeAdded_acNr1+timeAdded_acNr2);
                             if fuelSaveRatioAlliance>fuelSaveRatioBid
                                 Bids(acNr1Bid,2)=0;
-                                disp("Bid deleted")
+                                disp("Bid deleted");
+                                CoordinationCount1=CoordinationCount1+1;
                             end
                         end
                         
@@ -246,7 +247,8 @@ for i = 1:length(communicationCandidates(:,1))
                                 (timeAdded_acNr1+timeAdded_acNr2);
                             if fuelSaveRatioAlliance>fuelSaveRatioBid
                                 Bids(acNr2Bid,2)=0;
-                                disp("Bid deleted")
+                                disp("Bid deleted");
+                                CoordinationCount1=CoordinationCount1+1;
                             end
                         end
                     end
@@ -263,6 +265,7 @@ for i = 1:length(communicationCandidates(:,1))
                 FuelDelayRatio=Bids(BestBid,2)/Bids(BestBid,3);
                 Devision=(FuelRatioNonAlliance+0.01)/FuelDelayRatio;
                 Bids=[Bids(BestBid,1) (FuelRatioNonAlliance+0.01) Devision Bids(BestBid,4)];
+                CoordinationCount2=CoordinationCount2+1;
             end
         end
         
@@ -318,7 +321,8 @@ for i = 1:length(communicationCandidates(:,1))
                 if coordination==1 &&~isempty(AllianceBids) && ...
                         BestCoordination>2*AllianceBids(BidnumberAlliance(1),2) ...
                         && BestCoordination>2*FuelRatioAlliance
-                    disp("Coordination 1 applied")
+                    disp("Coordination 1 applied");
+                    CoordinationCount3=CoordinationCount3+1;
                     acNr1=AllianceacNr1;
                     acNr2=AllianceacNr2;
                     step1b_routingSynchronizationFuelSavings;
@@ -343,7 +347,8 @@ for i = 1:length(communicationCandidates(:,1))
                     if coordination==1 && BestCoordination > ...
                             2*Bids(Bidnumber(1),2) && BestCoordination > ...
                             2*FuelRatioNonAlliance
-                        disp("Coordination 2 applied")
+                        disp("Coordination 2 applied");
+                        CoordinationCount3=CoordinationCount3+1;
                         acNr1=AllianceacNr1;
                         acNr2=AllianceacNr2;
                         step1b_routingSynchronizationFuelSavings;
