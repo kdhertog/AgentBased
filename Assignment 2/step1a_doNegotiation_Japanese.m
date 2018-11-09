@@ -252,13 +252,13 @@ for i = 1:length(communicationCandidates(:,1))
                                 if AllianceacNr1 == 2 && AllianceacNr2 == 2 %Both are in the alliance, so they want to work together no matter what
                                     privateValue = 1.0;
                                 elseif AllianceacNr1 == 1 && AllianceacNr2 == 2 %Alliance bidder has a lower willingness to work with non alliance 
-                                    privateValue = (1 - fuelSaveRequired / potentialFuelSavings) * factorNonAllianceAuctioneer;
+                                    privateValue = (1 - fuelSaveRequired / (potentialFuelSavings+1e-8)) * factorNonAllianceAuctioneer;
                                 else
-                                    privateValue = 1 - fuelSaveRequired / potentialFuelSavings;
+                                    privateValue = 1 - fuelSaveRequired / (potentialFuelSavings+1e-8);
                                 end
                                 
                                 %Determine devision required to make the bid
-                                devision = bidHeight / potentialFuelSavings;
+                                devision = bidHeight / (potentialFuelSavings+1e-8);
                                 
                                 %Leave the auction if the bid is to high
                                 bidValue = devision;
@@ -315,7 +315,8 @@ for i = 1:length(communicationCandidates(:,1))
                 end
                 
                 %Remove bidders from the bidder list
-                bidders(BiddersToBeRemoved) = [];
+                biddersToBeRemoved2 = unique(BiddersToBeRemoved);
+                bidders(biddersToBeRemoved2) = [];
                 nBidders = length(bidders)-length(BiddersToBeRemoved)-1;
                 
                 %Determine whether the auction can end. This is the case

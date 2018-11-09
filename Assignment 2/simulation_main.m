@@ -100,7 +100,7 @@ prep4_loadFlightSchedule;
 % Load the flight schedules into the 3D matrix.
 flightsInitialSchedule(simrunSchedule,:,:) = flightsInitialData;
 end
-
+test = "START"
 %% Carry out the simulation runs.
 for simrun = 1:nSimulations
     %% Prepare the (new) simulation run.
