@@ -205,7 +205,6 @@ for i = 1:length(communicationCandidates(:,1))
                 BiddersToBeRemoved = []; %Bidders that do not want to bid anymore
                 alliancePotentialFuelSavings = []; %potential fuel savings of alliance members
                 
-                
                 %Loop over all bidders j 
                 for j = 1:nBidders
                     acNr2 = bidders(j+1);
@@ -241,6 +240,15 @@ for i = 1:length(communicationCandidates(:,1))
                             alliancePotentialFuelSavings = [alliancePotentialFuelSavings, [IndexacNr2, potentialFuelSavings]]; %#ok<AGROW>
                         end
                         
+                        %Check if the aircraft has
+                        %possibilities to cooperate with other
+                        %allaince members
+                        if ~isempty(AllianceCoordination)
+                            acNr2CoordinationIndex=find(AllianceCoordination(:,1)==acNr2);
+                        else 
+                            acNr2CoordinationIndex=[];
+                        end
+                        
                         %Determine to bid or not. If there is a potential for
                         %FuelSavings, the agent wants to bid. 
                         bidDecisionFactor = potentialFuelSavings;
@@ -251,9 +259,9 @@ for i = 1:length(communicationCandidates(:,1))
                                 if AllianceacNr1 == 2 && AllianceacNr2 == 2 %Both are in the alliance, so they want to work together no matter what
                                     privateValue = 1.0;
                                 elseif AllianceacNr1 == 1 && AllianceacNr2 == 2 %Alliance bidder has a lower willingness to work with non alliance 
-                                    privateValue = (1 - fuelSaveRequired / potentialFuelSavings) * factorNonAllianceAuctioneer;
+                                    privateValue = (1 - fuelSaveRequired / (potentialFuelSavings+1e-8)) * factorNonAllianceAuctioneer;
                                 else
-                                    privateValue = 1 - fuelSaveRequired / potentialFuelSavings;
+                                    privateValue = 1 - fuelSaveRequired / (potentialFuelSavings+1e-8);
                                 end
                                 
                                 %Determine the height of the bid, which will be
@@ -262,28 +270,17 @@ for i = 1:length(communicationCandidates(:,1))
                                     bestBidHeight = max(Bids(:,2));
                                     currentBidHeight = bestBidHeight * 1.05;
                                 else
-                                    currentBidHeight = fuelSaveRequired; %We start with an obvious advantage for the bidder
+                                    currentBidHeight = fuelSaveRequired; %We start with the minimum bid
                                 end
 
                                 %Determine devision required to make the bid
                                 devision = currentBidHeight / (potentialFuelSavings+1e-8);
-
-                                %Either bid, or, if this is not possible, quit
-                                %the auction
                                 bidValue = devision;
-                                
-                                %Check if the aircraft has other
-                                %possibilities to cooperate with other
-                                %allaince members
-                                if ~isempty(AllianceCoordination)
-                                    acNr2CoordinationIndex=find(AllianceCoordination(:,1)==acNr2);
-                                else 
-                                    acNr2CoordinationIndex=[];
-                                end
                                 
                                 %If the aircraft can get a higher fuel
                                 %saving with other agent, the agent stops
-                                %bidding
+                                %bidding. If he can bid (bidValue
+                                %lower than privateValue) he bids.
                                 if coordination==1 && ~isempty(acNr2CoordinationIndex) && ...
                                       (1-bidValue)*potentialFuelSavings < ...
                                       AllianceCoordination(acNr2CoordinationIndex,2)   
@@ -326,8 +323,10 @@ for i = 1:length(communicationCandidates(:,1))
                         ~= maxAlliance)]; %#ok<AGROW>
                 end
                 
-                %Remove bidders from the bidder list
-                bidders(BiddersToBeRemoved) = [];
+                %Remove bidders from the bidder list (first remove
+                %duplicate acNr2
+                biddersToBeRemoved2 = unique(BiddersToBeRemoved);
+                bidders(biddersToBeRemoved2) = [];
                 nBidders = length(bidders)-1;
                 
                 %Determine whether the auction can end. This is the case
@@ -351,7 +350,6 @@ for i = 1:length(communicationCandidates(:,1))
 
                     %End the auction
                     auction = 0;
-                    break
 
                 end
             end 

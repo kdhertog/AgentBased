@@ -262,15 +262,15 @@ for i = 1:length(communicationCandidates(:,1))
                                     privateValue = 1.0;
                                     test = "OPTION1";
                                 elseif AllianceacNr1 == 1 && AllianceacNr2 == 2 %Alliance bidder has a lower willingness to work with non alliance 
-                                    privateValue = (1 - fuelSaveRequired / potentialFuelSavings) * factorNonAllianceAuctioneer;
+                                    privateValue = (1 - fuelSaveRequired / (potentialFuelSavings+1e-8)) * factorNonAllianceAuctioneer;
                                     test = "OPTION2";
                                 else
-                                    privateValue = 1 - fuelSaveRequired / potentialFuelSavings;
+                                    privateValue = 1 - fuelSaveRequired / (potentialFuelSavings+1e-8);
                                     test = "OPTION4";
                                 end
                                 
                                 %Determine devision required to make the bid
-                                devision = bidHeight / potentialFuelSavings;
+                                devision = bidHeight / (potentialFuelSavings+1e-8);
 
                                 %If the agent can bid he bids
                                 bidValue = devision;
@@ -341,7 +341,7 @@ for i = 1:length(communicationCandidates(:,1))
                     if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1 && ...
                     (flightsData(acNr1,14) ~= flightsData(acNr2,14) &&  flightsData(acNr1,15) ~= flightsData(acNr2,15))
                         step1b_routingSynchronizationFuelSavings;
-                        devision = fuelSaveRequired / potentialFuelSavings;
+                        devision = fuelSaveRequired / (potentialFuelSavings+1e-8);
                         fuelSavingsOffer = potentialFuelSavings*devision;
                         divisionFutureSavings = devision;
                         step1c_updateProperties
@@ -354,7 +354,8 @@ for i = 1:length(communicationCandidates(:,1))
                 end
                 
                 %Remove bidders from the bidder list
-                bidders(BiddersToBeRemoved) = [];
+                biddersToBeRemoved2 = unique(BiddersToBeRemoved);
+                bidders(biddersToBeRemoved2) = [];
                 nBidders = length(bidders)-1;
                 
                 %Lower bid height

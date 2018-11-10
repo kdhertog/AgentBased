@@ -236,9 +236,9 @@ for i = 1:length(communicationCandidates(:,1))
                         if AllianceacNr1 == 2 && AllianceacNr2 == 2 %Both are in the alliance, so they want to work together no matter what
                             privateValue = 1.0;
                         elseif AllianceacNr1 == 1 && AllianceacNr2 == 2 %Alliance bidder has a lower willingness to work with non alliance 
-                            privateValue = (1 - fuelSaveRequired / potentialFuelSavings) * factorNonAllianceAuctioneer;
+                            privateValue = (1 - fuelSaveRequired / (potentialFuelSavings+1e-8)) * factorNonAllianceAuctioneer;
                         else
-                            privateValue = 1 - fuelSaveRequired / potentialFuelSavings;
+                            privateValue = 1 - fuelSaveRequired / (potentialFuelSavings+1e-8);
                         end
                         
                         %Check if the aircraft has other
