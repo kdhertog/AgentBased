@@ -136,8 +136,6 @@ for i = 1:length(communicationCandidates(:,1))
                
                 if AllianceacNr2==2 && coordination==1
                     AlliancePartners=[AlliancePartners, acNr2];
-                elseif coordination==1 
-                    NonAlliancePartners=[NonAlliancePartners, acNr2];
                 end 
                               
                 
@@ -164,7 +162,9 @@ for i = 1:length(communicationCandidates(:,1))
                             if ~isempty(flightsData(acNr2,29)) && ...
                                     FuelDelayRatio*(1-devision)>bidratio* ...
                                     flightsData(acNr2,29)
-
+                                if coordination==1 
+                                    NonAlliancePartners=[NonAlliancePartners, acNr2];
+                                end
                                 Bids=[Bids;acNr2,FuelDelayRatio*devision ...
                                 ,devision,AllianceacNr2];
                             end                            
@@ -206,8 +206,12 @@ for i = 1:length(communicationCandidates(:,1))
                         if ~isempty(flightsData(acNr2,29)) && ...
                                 FuelDelayRatio*(1-devision)>bidratio* ...
                                 flightsData(acNr2,29)
+                            if coordination==1 && AllianceacNr2==1
+                                    NonAlliancePartners=[NonAlliancePartners, acNr2];
+                            end
                             Bids=[Bids;acNr2,FuelDelayRatio*devision ...
                             ,devision,AllianceacNr2];
+                            
                         end 
                     end
                 end
@@ -258,8 +262,8 @@ for i = 1:length(communicationCandidates(:,1))
         end
         
         if coordination==1 && isempty(NonAlliancePartners) && ...
-                ~isempty(Bids)
-            BestBid=find(Bids(:,2)==max(Bids(:,2)));
+                ~isempty(Bids) && min(Bids(:,3)>0)
+            BestBid=find(Bids(:,2)/Bids(:,3)==max((Bids(:,2)/Bids(:,3))));
             BestBid=BestBid(1);
             if Bids(BestBid,2)>FuelRatioNonAlliance
                 FuelDelayRatio=Bids(BestBid,2)/Bids(BestBid,3);
