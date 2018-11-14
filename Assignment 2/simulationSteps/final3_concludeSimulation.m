@@ -75,6 +75,7 @@ fuelSaveNonAlliancePerRun(simrun) = fuelSaveNonAlliance;
 CoordinationCount1PerRun(simrun)= CoordinationCount1;
 CoordinationCount2PerRun(simrun)= CoordinationCount2;
 CoordinationCount3PerRun(simrun)= CoordinationCount3;
+AuctionCountPerRun(simrun)= AuctionCount;
 
 %Percentage of alliance flights
 AlliancePctPerRun(simrun)= percentageAlliance;
@@ -83,6 +84,7 @@ AlliancePctPerRun(simrun)= percentageAlliance;
 CoordinationCount1=0;
 CoordinationCount2=0;
 CoordinationCount3=0;
+AuctionCount= 0;
 
 
 %% Clear some variables.

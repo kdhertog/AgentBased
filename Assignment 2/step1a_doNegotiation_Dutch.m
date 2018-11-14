@@ -203,6 +203,7 @@ for i = 1:length(communicationCandidates(:,1))
             %Start the auction
             bidHeight = initialBidHeight;
             non_alliance = 0; %if there are any non-alliance bidders
+            AuctionCount = AuctionCount + 1;
             
             while bidHeight > fuelSaveRequired-10
                 
@@ -291,6 +292,7 @@ for i = 1:length(communicationCandidates(:,1))
                                       (1-bidValue)*potentialFuelSavings < ...
                                       AllianceCoordination(acNr2CoordinationIndex,2)   
                                         test="Coordination applied";
+                                        CoordinationCount1 = CoordinationCount1 + 1;
                                       BiddersToBeRemoved = [BiddersToBeRemoved,IndexacNr2]; %#ok<AGROW> 
                                 
                                 elseif bidValue <= privateValue
@@ -332,6 +334,7 @@ for i = 1:length(communicationCandidates(:,1))
                 %winning bid. 
                 if coordination == 1 && isempty(alliancePotentialFuelSavings) == 0 && non_alliance == 0
                     test = "Coordination";
+                    CoordinationCount2 = CoordinationCount2 + 1;
                     maxAlliance = max(alliancePotentialFuelSavings(:,2));
                     IndexmaxAlliance = find(alliancePotentialFuelSavings(:,2)==maxAlliance);
                     IndexacNr2 = alliancePotentialFuelSavings(IndexmaxAlliance(1),1);

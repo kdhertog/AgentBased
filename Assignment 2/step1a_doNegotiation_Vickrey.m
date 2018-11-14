@@ -196,6 +196,7 @@ for i = 1:length(communicationCandidates(:,1))
             end
             
             %Start the auction
+            AuctionCount = AuctionCount + 1;
             for j = 1:nBidders
                 acNr2 = bidders(j+1);
                 IndexacNr2 = find(bidders==acNr2);
@@ -228,7 +229,7 @@ for i = 1:length(communicationCandidates(:,1))
                     %FuelSavings, the agent wants to bid. 
                     bidDecisionFactor = potentialFuelSavings;
 
-                    bidTreshold = 0; %bidDecision factor should be bigger than this
+                    bidTreshold = fuelSaveRequired; %bidDecision factor should be bigger than this
 
                     if bidDecisionFactor > bidTreshold
 
@@ -258,6 +259,7 @@ for i = 1:length(communicationCandidates(:,1))
                               (1-privateValue)*potentialFuelSavings < ...
                               AllianceCoordination(acNr2CoordinationIndex,2)   
                                 test="Coordination applied";
+                                CoordinationCount1 = CoordinationCount1 + 1;
                         else
                             %Optimal bid is the private value
                             Bids = [Bids;acNr2,potentialFuelSavings*privateValue ...
@@ -279,14 +281,18 @@ for i = 1:length(communicationCandidates(:,1))
                     %Form formation
                     acNr2 = bestBid(1);
                     step1b_routingSynchronizationFuelSavings;
-                    fuelSavingsOffer = secondBestBid(2)*timeAdded_acNr1;
+                    fuelSavingsOffer = secondBestBid(2);
                     divisionFutureSavings=secondBestBid(3);
                     step1c_updateProperties
-                else
+                    
+                else %There is only one bid, so the winner pays the minimum price
                     acNr2 = Bids(1);
                     step1b_routingSynchronizationFuelSavings;
-                    fuelSavingsOffer = Bids(2)*timeAdded_acNr1;
-                    divisionFutureSavings=Bids(3);
+                    
+                    %Devision required to pay the minimum
+                    devision = fuelSaveRequired / potentialFuelSavings;
+                    fuelSavingsOffer = fuelSaveRequired;
+                    divisionFutureSavings = devision;
                     step1c_updateProperties
                 end 
             end

@@ -57,6 +57,7 @@ flightsPerAirportEuro = 8.7;
 CoordinationCount1=0;
 CoordinationCount2=0;
 CoordinationCount3=0;
+AuctionCount= 0;
 
 % Check whether to fix the seed of the random number generator (RNG).
 if booleanFixSeedRng == 1  
