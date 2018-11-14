@@ -25,9 +25,16 @@ fuelSavingsNonAlliancePctPerRun = zeros(nSimulations,1); % [%]
 % to the total distance if only solo flights were flown.
 extraDistancePctPerRun = zeros(nSimulations,1); % [%]
 
+extraDistancePctPerRunAlliance = zeros(nSimulations,1); % [%]
+extraDistancePctPerRunNonAlliance = zeros(nSimulations,1); % [%]
+
 % Percentual change in total flight, comparing the actual flight time to
 % the total flight time of only solo flights were flown.
 extraFlightTimePctPerRun = zeros(nSimulations,1); % [%] 
+
+extraFlightTimePctPerRunAlliance = zeros(nSimulations,1); % [%] 
+
+extraFlightTimePctPerRunNonAlliance = zeros(nSimulations,1); % [%] 
 
 %The number of fomrations that were created in the simulation loop
 numberOfFormationsPerRun = zeros(nSimulations,1);
@@ -56,5 +63,7 @@ CoordinationCount1PerRun= zeros(nSimulations,1);
 CoordinationCount2PerRun= zeros(nSimulations,1);
 CoordinationCount3PerRun= zeros(nSimulations,1);
 
+%Alliance percentage per run
+AlliancePctPerRun= zeros(nSimulations,1);
 
 

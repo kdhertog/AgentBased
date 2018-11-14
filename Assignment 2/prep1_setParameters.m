@@ -10,7 +10,7 @@
 nSimulations = 50; 
 
 % Value of the maximum communication distance BETWEEN two aircraft [km]. 
-communicationRange = 500;                                             
+communicationRange = 750;                                             
 
 % Percentage of aircraft in simulation that are part of the alliance [%].
 percentageAlliance = 40;                                                    
@@ -23,7 +23,7 @@ dt = 300;
 
 % Negotiation technique (1: greedy algorithm, 2: CNP, 3: Dutch, 4: English,
 % 5: Vickrey, 6: Japanese, 7: first-price sealed-bid).
-negotiationTechnique = 5; 
+negotiationTechnique = 2; 
 
 % Visualize the results (0: no visualization, 1: visualization).
 visualizationOption = 0;
@@ -32,7 +32,7 @@ visualizationOption = 0;
 % random flight schedules ('nSimulations' schedules in total) will be
 % generated every time. (0: do not fix seed, different random flight
 % schedules, 1: fix seed).
-booleanFixSeedRng = 0;  
+booleanFixSeedRng = 1;  
 
 % Coordination among alliance partners
-coordination = 1;
+coordination = 0;
