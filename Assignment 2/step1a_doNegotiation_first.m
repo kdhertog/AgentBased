@@ -197,6 +197,7 @@ for i = 1:length(communicationCandidates(:,1))
             
             alliancePotentialFuelSavings = [];
             non_alliance = 0; %if there are any non-alliance bidders
+            AuctionCount = AuctionCount + 1;
             %Start the auction and loop over the bidders
             for j = 1:nBidders
                 acNr2 = bidders(j+1);
@@ -269,6 +270,7 @@ for i = 1:length(communicationCandidates(:,1))
                               (1-privateValue)*potentialFuelSavings < ...
                               AllianceCoordination(acNr2CoordinationIndex,2)   
                                 test="Coordination applied";
+                                CoordinationCount1 = CoordinationCount1 + 1;
                         else
                             %Do bid based on private value
                             bidFactor = 0.9;
@@ -316,6 +318,7 @@ for i = 1:length(communicationCandidates(:,1))
                 %heighest fuel saving potential
                 elseif isempty(alliancePotentialFuelSavings) == 0 && non_alliance == 0
                     test = "Coordination";
+                    CoordinationCount2 = CoordinationCount2 + 1;
                     maxAlliance = max(alliancePotentialFuelSavings(:,2));
                     IndexmaxAlliance = find(alliancePotentialFuelSavings(:,2)==maxAlliance);
                     IndexacNr2 = alliancePotentialFuelSavings(IndexmaxAlliance(1),1);

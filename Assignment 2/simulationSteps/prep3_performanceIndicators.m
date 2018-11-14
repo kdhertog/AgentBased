@@ -56,5 +56,7 @@ CoordinationCount1PerRun= zeros(nSimulations,1);
 CoordinationCount2PerRun= zeros(nSimulations,1);
 CoordinationCount3PerRun= zeros(nSimulations,1);
 
+AuctionCountPerRun = zeros(nSimulations,1);
+
 
 

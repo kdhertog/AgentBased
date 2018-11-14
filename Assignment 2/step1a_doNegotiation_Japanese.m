@@ -199,6 +199,7 @@ for i = 1:length(communicationCandidates(:,1))
             %Start the auction
             auction = 1;
             bidHeight = fuelSaveRequired;
+            AuctionCount = AuctionCount + 1;
       
             while auction == 1
                 
@@ -279,6 +280,7 @@ for i = 1:length(communicationCandidates(:,1))
                                       (1-bidValue)*potentialFuelSavings < ...
                                       AllianceCoordination(acNr2CoordinationIndex,2)   
                                         test="Coordination applied";
+                                        CoordinationCount1 = CoordinationCount1 + 1;
                                       BiddersToBeRemoved = [BiddersToBeRemoved,IndexacNr2]; %#ok<AGROW> 
                                 
                                 elseif bidValue > privateValue
@@ -312,6 +314,7 @@ for i = 1:length(communicationCandidates(:,1))
                 if coordination == 1 && isempty(alliancePotentialFuelSavings) == 0
                     maxAlliance = max(alliancePotentialFuelSavings(:,2));
                     BiddersToBeRemoved = [BiddersToBeRemoved,alliancePotentialFuelSavings(alliancePotentialFuelSavings(:,1) ~= maxAlliance)]; %#ok<AGROW>
+                    CoordinationCount2 = CoordinationCount2 + 1;
                 end
                 
                 %Remove bidders from the bidder list
@@ -331,7 +334,7 @@ for i = 1:length(communicationCandidates(:,1))
 
                             %Form formation
                             step1b_routingSynchronizationFuelSavings;
-                            fuelSavingsOffer = bestBid(2)*timeAdded_acNr1;
+                            fuelSavingsOffer = bestBid(2);
                             divisionFutureSavings = bestBid(3);
                             step1c_updateProperties
                         end
